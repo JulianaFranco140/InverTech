@@ -1,0 +1,45 @@
+'use client';
+import styles from './DashboardHeader.module.css';
+
+export default function DashboardHeader({ 
+  title, 
+  subtitle, 
+  userType,
+  primaryButtonText, 
+  primaryButtonAction,
+  secondaryButtonText,
+  secondaryButtonAction,
+  notificationCount = 0 
+}) {
+  return (
+    <div className={styles.header}>
+      <div className={styles.headerLeft}>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+      </div>
+      <div className={styles.headerActions}>
+        {primaryButtonText && (
+          <button 
+            className={`${styles.primaryBtn} ${userType === 'entrepreneur' ? styles.entrepreneurBtn : styles.investorBtn}`}
+            onClick={primaryButtonAction}
+          >
+            {primaryButtonText}
+          </button>
+        )}
+        {secondaryButtonText && (
+          <button className={styles.secondaryBtn} onClick={secondaryButtonAction}>
+            {secondaryButtonText}
+          </button>
+        )}
+        {notificationCount > 0 && (
+          <div className={styles.notifications}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span className={styles.notificationBadge}>{notificationCount}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

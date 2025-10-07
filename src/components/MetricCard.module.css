@@ -1,0 +1,58 @@
+.metricCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metricContent {
+  flex: 1;
+}
+
+.metricLabel {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.metricValue {
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.metricSubtext {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.metricChange {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.metricChange.positive {
+  color: #059669;
+}
+
+.metricChange.negative {
+  color: #dc2626;
+}
+
+.estimatedText {
+  color: #3b82f6;
+  font-weight: 600;
+}

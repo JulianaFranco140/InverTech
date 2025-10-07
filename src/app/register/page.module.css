@@ -1,0 +1,280 @@
+.registerContainer {
+  display: flex;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+
+.leftSide {
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 400px;
+}
+
+.formTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.formSubtitle {
+  color: var(--gray);
+  font-size: 14px;
+  margin: 0 0 30px 0;
+  text-align: center;
+}
+
+.roleSelection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.roleCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.roleCard:hover {
+  border-color: var(--primary-blue);
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+}
+
+.roleCardActive {
+  border-color: var(--primary-blue);
+  background: #f7faff;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+}
+
+.roleIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+.roleCardActive .roleIcon {
+  background: #4A90E2;
+}
+
+.roleCard .roleIcon {
+  background: #f1f5f9;
+}
+
+.iconInvestor,
+.iconEntrepreneur {
+  display: block;
+}
+
+.roleLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.roleCardActive .roleLabel {
+  color: var(--primary-blue);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background: #f9f9f9;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  background: white;
+}
+.submitButton {
+  background: var(--dark-blue);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-top: 10px;
+}
+
+.submitButton:hover {
+  background: var(--darker-blue);
+}
+.loginLink {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.loginLink a {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.loginLink a:hover {
+  text-decoration: underline;
+  color: var(--dark-blue);
+}
+
+.rightSide {
+  flex: 1;
+  background: linear-gradient(135deg, var(--green-button) 0%, var(--primary-blue) 40%, var(--dark-blue) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: white;
+  position: relative;
+}
+
+.rightContent {
+  max-width: 400px;
+  text-align: center;
+}
+
+.backButton {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-block;
+  opacity: 0.9;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.backButton:hover {
+  opacity: 1;
+}
+
+.logoSection {
+  margin-bottom: 40px;
+}
+
+.logoTitle {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.welcomeTitle {
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0;
+  color: white;
+  opacity: 0.95;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: left;
+}
+
+.benefit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.benefitTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.benefitText {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .registerContainer {
+    flex-direction: column;
+  }
+  
+  .rightSide {
+    min-height: 40vh;
+    padding: 30px 20px;
+  }
+  
+  .rightContent {
+    max-width: none;
+  }
+  
+  .logoTitle {
+    font-size: 36px;
+  }
+  
+  .welcomeTitle {
+    font-size: 20px;
+  }
+  
+  .leftSide {
+    padding: 30px 20px;
+  }
+  
+  .roleSelection {
+    flex-direction: column;
+  }
+  
+  .backButton {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
