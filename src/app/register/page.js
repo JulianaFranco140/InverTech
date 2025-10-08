@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRegister } from '../../hooks/useRegister.js';
 import styles from './page.module.css';
 
 export default function RegisterPage() {
@@ -10,8 +11,10 @@ export default function RegisterPage() {
     phone: '',
     password: '',
     confirmPassword: '',
-    role: 'Inversionista'
+    role: 'inversionista'
   });
+
+  const { register, isLoading, error } = useRegister();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,43 +31,65 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (formData.password !== formData.confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
-    // Aquí iría la lógica de registro
-    console.log('Register attempt:', formData);
+
+    try {
+      await register(formData);
+    } catch (err) {
+      console.error('Registration failed:', err);
+    }
   };
 
   return (
     <div className={styles.registerContainer}>
-      {/* Lado izquierdo - Formulario */}
       <div className={styles.leftSide}>
         <div className={styles.formContainer}>
           <h2 className={styles.formTitle}>Crear cuenta</h2>
           <p className={styles.formSubtitle}>Únete a la revolución del financiamiento inteligente</p>
 
-          {/* Botones de rol con iconos */}
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
+
           <div className={styles.roleSelection}>
             <button
               type="button"
-              onClick={() => handleRoleChange('Inversionista')}
-              className={`${styles.roleCard} ${formData.role === 'Inversionista' ? styles.roleCardActive : ''}`}
+              onClick={() => handleRoleChange('inversionista')}
+              className={`${styles.roleCard} ${formData.role === 'inversionista' ? styles.roleCardActive : ''}`}
             >
               <div className={styles.roleIcon}>
-                <span className={styles.iconInvestor}></span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 17L9 11L13 15L21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 7H21V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="7" cy="20" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                  <path d="M6 20H8M7 19V21" stroke="currentColor" strokeWidth="1"/>
+                  <circle cx="15" cy="20" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                  <path d="M14 20H16M15 19V21" stroke="currentColor" strokeWidth="1"/>
+                </svg>
               </div>
               <span className={styles.roleLabel}>Inversionista</span>
             </button>
             <button
               type="button"
-              onClick={() => handleRoleChange('Emprendedor')}
-              className={`${styles.roleCard} ${formData.role === 'Emprendedor' ? styles.roleCardActive : ''}`}
+              onClick={() => handleRoleChange('emprendedor')}
+              className={`${styles.roleCard} ${formData.role === 'emprendedor' ? styles.roleCardActive : ''}`}
             >
               <div className={styles.roleIcon}>
-                <span className={styles.iconEntrepreneur}></span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.5 16.5C4.5 16.5 5.5 7.5 12 4C18.5 7.5 19.5 16.5 19.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 4V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx="12" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                  <path d="M9 16.5L8 19L10 18L8.5 20.5L11 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 16.5L16 19L14 18L15.5 20.5L13 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
               <span className={styles.roleLabel}>Emprendedor</span>
             </button>
@@ -83,6 +108,7 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -98,6 +124,7 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -113,6 +140,7 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -128,6 +156,7 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -143,11 +172,16 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            <button type="submit" className={styles.submitButton}>
-              Crear mi cuenta
+            <button 
+              type="submit" 
+              className={styles.submitButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creando cuenta...' : 'Crear mi cuenta'}
             </button>
           </form>
 
@@ -157,7 +191,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Lado derecho - Azul */}
       <div className={styles.rightSide}>
         <div className={styles.rightContent}>
           <Link href="/" className={styles.backButton}>

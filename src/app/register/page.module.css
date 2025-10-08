@@ -73,6 +73,7 @@
   justify-content: center;
   margin-bottom: 12px;
   font-size: 24px;
+  color: var(--dark-blue);
 }
 
 .roleCardActive .roleIcon {
@@ -123,12 +124,14 @@
   font-size: 16px;
   background: #f9f9f9;
   transition: border-color 0.2s ease;
+  color: #333;
 }
 
 .input:focus {
   outline: none;
   border-color: var(--primary-blue);
   background: white;
+  color:#334155
 }
 .submitButton {
   background: var(--dark-blue);
@@ -146,6 +149,13 @@
 .submitButton:hover {
   background: var(--darker-blue);
 }
+
+.submitButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .loginLink {
   text-align: center;
   margin-top: 24px;
@@ -242,6 +252,19 @@
   line-height: 1.4;
 }
 
+.errorMessage {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c44;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+
+
 /* Responsive design */
 @media (max-width: 768px) {
   .registerContainer {
@@ -278,3 +301,4 @@
     margin-bottom: 20px;
   }
 }
+

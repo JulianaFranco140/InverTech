@@ -33,7 +33,6 @@ export default function LoginPage() {
 
   return (
     <div className={styles.loginContainer}>
-      {/* Lado izquierdo - Azul */}
       <div className={styles.leftSide}>
         <div className={styles.leftContent}>
           <Link href="/" className={styles.backButton}>
@@ -49,7 +48,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Lado derecho - Formulario */}
       <div className={styles.rightSide}>
         <div className={styles.formContainer}>
           <h2 className={styles.formTitle}>Iniciar sesión</h2>
@@ -86,26 +84,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Rol</label>
-              <div className={styles.roleButtons}>
-                <button
-                  type="button"
-                  onClick={() => handleRoleChange('Inversionista')}
-                  className={`${styles.roleButton} ${formData.role === 'Inversionista' ? styles.roleButtonActive : ''}`}
-                >
-                  Inversionista
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleRoleChange('Emprendedor')}
-                  className={`${styles.roleButton} ${formData.role === 'Emprendedor' ? styles.roleButtonActive : ''}`}
-                >
-                  Emprendedor
-                </button>
-              </div>
-            </div>
-
+            
             <button type="submit" className={styles.submitButton}>
               Iniciar sesión
             </button>
