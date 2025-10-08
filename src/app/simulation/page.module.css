@@ -58,6 +58,7 @@
 
 .inputGroup {
   margin-bottom: 24px;
+  color: #333;
 }
 
 .inputGroup label {
@@ -80,6 +81,7 @@
   position: relative;
   z-index: 1;
   cursor: pointer;
+  color: #333
 }
 
 .inputGroup select {

@@ -116,6 +116,7 @@
   font-size: 16px;
   background: #f9f9f9;
   transition: border-color 0.2s ease;
+  color: #333;
 }
 
 .input:focus {
@@ -160,6 +161,22 @@
   color: var(--dark-blue);
 }
 
+.errorMessage {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.submitButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
 @media (max-width: 768px) {
   .loginContainer {

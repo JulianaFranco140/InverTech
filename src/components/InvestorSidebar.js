@@ -3,10 +3,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './InvestorSidebar.module.css';
+import { useLogout } from '../hooks/useLogout';
 
 export default function InvestorSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { logout } = useLogout();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   
   const menuItems = [
@@ -20,9 +21,8 @@ export default function InvestorSidebar() {
     setShowLogoutConfirm(true);
   };
 
-  const confirmLogout = () => {
-    // Aquí podrías agregar lógica para limpiar tokens, localStorage, etc.
-    router.push('/');
+  const confirmLogout = async () => {
+    await logout();
   };
 
   const cancelLogout = () => {

@@ -12,7 +12,6 @@
   overflow-x: hidden;
 }
 
-/* Botón para agregar proyecto */
 .addProjectSection {
   margin-bottom: 2rem;
   display: flex;
@@ -38,7 +37,6 @@
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-/* Estadísticas */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -83,15 +81,13 @@
   font-weight: 500;
 }
 
-/* Grid de proyectos */
+
 .projectsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
-
-/* Tarjetas de proyecto */
 .projectCard {
   background: white;
   border-radius: 16px;
@@ -258,7 +254,7 @@
   font-weight: 500;
 }
 
-/* Estado vacío */
+
 .emptyState {
   text-align: center;
   padding: 3rem;
@@ -296,7 +292,7 @@
   transform: translateY(-2px);
 }
 
-/* Modal Styles */
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -392,6 +388,7 @@
   box-sizing: border-box;
   font-family: inherit;
   appearance: none;
+  color: var(--input-color);
 }
 
 .inputGroup select {

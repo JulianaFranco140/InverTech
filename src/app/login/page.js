@@ -1,14 +1,16 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useLogin } from '../../hooks/useLogin';
 import styles from './page.module.css';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'Inversionista'
+    password: ''
   });
+
+  const { login, isLoading, error } = useLogin();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,17 +20,14 @@ export default function LoginPage() {
     }));
   };
 
-  const handleRoleChange = (role) => {
-    setFormData(prev => ({
-      ...prev,
-      role
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica de autenticación
-    console.log('Login attempt:', formData);
+    
+    try {
+      await login(formData);
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
   };
 
   return (
@@ -53,6 +52,12 @@ export default function LoginPage() {
           <h2 className={styles.formTitle}>Iniciar sesión</h2>
           <p className={styles.formSubtitle}>Ingresa a tu cuenta de InverTech</p>
 
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -66,6 +71,7 @@ export default function LoginPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -81,12 +87,16 @@ export default function LoginPage() {
                 onChange={handleInputChange}
                 className={styles.input}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            
-            <button type="submit" className={styles.submitButton}>
-              Iniciar sesión
+            <button 
+              type="submit" 
+              className={styles.submitButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
           </form>
 

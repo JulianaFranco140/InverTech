@@ -10,7 +10,7 @@ export async function POST(request) {
     const validation = validateRegisterData(body);
         
     if (!validation.isValid) {
-      console.log('❌ Errores de validación:', validation.errors);
+      console.log(' Errores de validación:', validation.errors);
       return NextResponse.json(
         { 
           error: 'Datos inválidos',
@@ -35,13 +35,14 @@ export async function POST(request) {
       email: body.email.toLowerCase().trim(),
       phone: body.phone.trim(),
       password: hashedPassword,
-      role: body.role
+      rol_id: body.rol_id
     });
 
     const token = generateToken(
       newUser.id_usuario, 
       newUser.correo_electronico, 
-      newUser.rol_id === 1 ? 'Inversionista' : 'Emprendedor'
+      newUser.nombre,
+      newUser.rol_id === 1 ? 1 : 2
     );
 
     const response = NextResponse.json(
@@ -53,7 +54,7 @@ export async function POST(request) {
           name: newUser.nombre,
           email: newUser.correo_electronico,
           phone: newUser.telefono,
-          role: newUser.rol_id === 1 ? 'Inversionista' : 'Emprendedor'
+          role: newUser.rol_id === 1 ? 1 : 2
         }
       },
       { status: 201 }
@@ -69,7 +70,7 @@ export async function POST(request) {
     return response;
 
   } catch (error) {
-    console.error('💥 Registration error:', error);
+    console.error(' Registration error:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor', details: error.message },
       { status: 500 }

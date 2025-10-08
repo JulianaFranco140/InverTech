@@ -2,13 +2,13 @@ import sql from '../lib/db.js';
 
 export class User {
   static async create(userData) {
-    const { fullName, email, phone, password, role } = userData;
+    const { fullName, email, phone, password, rol_id } = userData;
     
-    const rolId = role === 'Inversionista' ? 1 : 2;
+    const rolId = rol_id;
+    console.log("Desde user ", rolId);
     
     try {
-      console.log('🔍 Creando usuario con datos:', { fullName, email, phone, role, rolId });
-      
+
       const result = await sql`
         INSERT INTO usuarios (nombre, correo_electronico, telefono, contrasena, rol_id)
         VALUES (${fullName}, ${email}, ${phone}, ${password}, ${rolId})

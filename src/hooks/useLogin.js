@@ -1,33 +1,31 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export function useRegister() {
+export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const register = async (formData) => {
+  const login = async (credentials) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(credentials),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        if (data.details && Array.isArray(data.details)) {
-          throw new Error(data.details.join(', '));
-        }
-        throw new Error(data.error || 'Error en el registro');
+        throw new Error(data.error || 'Error en el login');
       }
 
+      // Redirigir según el rol - sin guardar información del usuario
       if (data.user.rol_id === 1) {
         router.push('/entrepreneur');
       } else {
@@ -36,7 +34,6 @@ export function useRegister() {
 
       return data;
     } catch (err) {
-      console.error('❌ Error en registro:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -44,5 +41,5 @@ export function useRegister() {
     }
   };
 
-  return { register, isLoading, error };
+  return { login, isLoading, error };
 }

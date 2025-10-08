@@ -62,7 +62,7 @@ export function validateRegisterData(data) {
     errors.push(phoneValidation.message);
   }
 
-  if (!data.role || !['Inversionista', 'Emprendedor'].includes(data.role)) {
+  if (!data.rol_id || data.rol_id !== 1 && data.rol_id !== 2) {
     errors.push('Rol inválido');
   }
 

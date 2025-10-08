@@ -44,12 +44,11 @@ export default function Simulation() {
     const adjustedRate = baseRate * multiplier;
     const monthlyRate = adjustedRate / 100 / 12;
     
-    // Cálculo de interés compuesto
+
     const finalAmount = amount * Math.pow(1 + monthlyRate, term);
     const totalGains = finalAmount - amount;
     const roi = (totalGains / amount) * 100;
-    
-    // Escenarios
+
     const conservativeRate = adjustedRate * 0.7;
     const optimisticRate = adjustedRate * 1.3;
     

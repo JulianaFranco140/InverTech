@@ -9,6 +9,7 @@
   --text-light: #f3f4f6;
   --text-muted: #010202;
   --gray: #666;
+  --input-color: #5e5d5d;
 }
 
 @media (prefers-color-scheme: dark) {

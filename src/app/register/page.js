@@ -11,7 +11,7 @@ export default function RegisterPage() {
     phone: '',
     password: '',
     confirmPassword: '',
-    role: 'inversionista'
+    rol_id: null
   });
 
   const { register, isLoading, error } = useRegister();
@@ -24,10 +24,10 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleRoleChange = (role) => {
+  const handleRoleChange = (rol_id) => {
     setFormData(prev => ({
       ...prev,
-      role
+      rol_id
     }));
   };
 
@@ -62,8 +62,8 @@ export default function RegisterPage() {
           <div className={styles.roleSelection}>
             <button
               type="button"
-              onClick={() => handleRoleChange('inversionista')}
-              className={`${styles.roleCard} ${formData.role === 'inversionista' ? styles.roleCardActive : ''}`}
+              onClick={() => handleRoleChange(2)}
+              className={`${styles.roleCard} ${formData.rol_id === 2 ? styles.roleCardActive : ''}`}
             >
               <div className={styles.roleIcon}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,8 +79,8 @@ export default function RegisterPage() {
             </button>
             <button
               type="button"
-              onClick={() => handleRoleChange('emprendedor')}
-              className={`${styles.roleCard} ${formData.role === 'emprendedor' ? styles.roleCardActive : ''}`}
+              onClick={() => handleRoleChange(1)}
+              className={`${styles.roleCard} ${formData.rol_id === 1 ? styles.roleCardActive : ''}`}
             >
               <div className={styles.roleIcon}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

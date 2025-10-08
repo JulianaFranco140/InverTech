@@ -152,7 +152,7 @@ export default function EntrepreneurDashboard() {
       <EntrepreneurSidebar />
       <div className={styles.mainContent}>
         <DashboardHeader
-          title="¡Hola, Ana María Rodríguez!"
+          title="¡Hola, Juliana Franco!"
           subtitle={`Gestiona tus ${projects.length} emprendimientos y haz crecer tu portafolio`}
           userType="entrepreneur"
           primaryButtonText="+ Solicitar Financiamiento"
@@ -162,7 +162,6 @@ export default function EntrepreneurDashboard() {
         />
 
         <div className={styles.dashboardContent}>
-          {/* Resumen General */}
           <div className={styles.summarySection}>
             <h2>Resumen de Portafolio</h2>
             <div className={styles.summaryGrid}>

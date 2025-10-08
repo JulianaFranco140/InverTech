@@ -6,6 +6,8 @@ import MetricCard from '../../components/MetricCard';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -76,9 +78,7 @@ export default function DashboardPage() {
     <div className={styles.dashboardContainer}>
       <InvestorSidebar />
       
-      {/* Main Content */}
       <div className={styles.mainContent}>
-        {/* Header */}
         <DashboardHeader
           title="Bienvenido, Demo Inversionista"
           subtitle="Gestiona tu portafolio y descubre nuevas oportunidades de inversión"
