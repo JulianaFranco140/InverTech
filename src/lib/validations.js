@@ -72,5 +72,5 @@ export function validateRegisterData(data) {
   };
 
   console.log('🔍 Resultado validación:', result);
-  return result; // ⭐ ESTO FALTABA
+  return result; 
 }

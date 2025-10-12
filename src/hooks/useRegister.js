@@ -36,7 +36,7 @@ export function useRegister() {
 
       return data;
     } catch (err) {
-      console.error('❌ Error en registro:', err);
+      console.error(' Error en registro:', err);
       setError(err.message);
       throw err;
     } finally {

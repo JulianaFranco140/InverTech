@@ -48,8 +48,7 @@ if (isProtectedRoute) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Verificar rol y redirigir según corresponda
+
     if (decoded.role === 1 && isInvestorRoute) {
       return NextResponse.redirect(new URL('/entrepreneur', request.url));
     }
@@ -75,7 +74,7 @@ try {
   return NextResponse.redirect(new URL(redirectUrl, request.url));
 } catch (error) {
   console.log('Error al verificar token en auth route:', error);
-  // Token inválido, permitir acceso a auth routes
+
   const response = NextResponse.next();
   response.cookies.delete('auth-token');
   return response;
