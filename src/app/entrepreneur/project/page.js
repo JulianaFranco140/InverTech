@@ -6,7 +6,7 @@ import DashboardHeader from '../../../components/DashboardHeader';
 import styles from './page.module.css';
 
 export default function MyProjectPage() {
-  const [userName] = useState('Ana María Rodríguez'); // En producción vendría del sistema de auth
+  const [userName] = useState('Ana María Rodríguez');
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
   const [projects, setProjects] = useState([
     {
@@ -14,9 +14,7 @@ export default function MyProjectPage() {
       name: 'TechFlow Solutions',
       description: 'Plataforma SaaS que automatiza procesos de facturación y gestión financiera para PyMEs colombianas. Utilizamos IA para predecir flujos de caja y optimizar cobros.',
       startDate: '2023-01-15',
-      capital: 150000000, // COP
       category: 'Tecnología',
-      status: 'Activo',
       employees: 12,
       clients: 85,
       monthlyRevenue: 25000000
@@ -26,21 +24,22 @@ export default function MyProjectPage() {
       name: 'EcoVerde Packaging',
       description: 'Empresa de empaques biodegradables para la industria alimentaria. Creamos soluciones sostenibles que reducen el impacto ambiental.',
       startDate: '2022-08-20',
-      capital: 80000000, // COP
       category: 'Sostenibilidad',
-      status: 'Crecimiento',
       employees: 8,
       clients: 45,
       monthlyRevenue: 18000000
     }
   ]);
 
+  // CAMBIO: Agregar employees y clients al estado inicial
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
     startDate: '',
-    capital: '',
-    category: ''
+    category: '',
+    monthlyIncome: '',
+    clients: '',
+    employees: ''
   });
 
   const formatCurrency = (amount) => {
@@ -70,23 +69,33 @@ export default function MyProjectPage() {
   const handleAddProject = (e) => {
     e.preventDefault();
     
+    // CAMBIO: Convertir todos los valores numéricos correctamente
+    const monthlyRevenueValue = parseInt(newProject.monthlyIncome.replace(/[^0-9]/g, '')) || 0;
+    const clientsValue = parseInt(newProject.clients.replace(/[^0-9]/g, '')) || 0;
+    const employeesValue = parseInt(newProject.employees.replace(/[^0-9]/g, '')) || 0;
+
     const project = {
       id: projects.length + 1,
-      ...newProject,
-      capital: parseInt(newProject.capital.replace(/[^0-9]/g, '')),
-      status: 'En Desarrollo',
-      employees: 1,
-      clients: 0,
-      monthlyRevenue: 0
+      name: newProject.name,
+      description: newProject.description,
+      startDate: newProject.startDate,
+      category: newProject.category,
+      employees: employeesValue,
+      clients: clientsValue,
+      monthlyRevenue: monthlyRevenueValue
     };
 
     setProjects([...projects, project]);
+    
+    // CAMBIO: Resetear todos los campos incluyendo employees y clients
     setNewProject({
       name: '',
       description: '',
       startDate: '',
-      capital: '',
-      category: ''
+      category: '',
+      monthlyIncome: '',
+      clients: '',
+      employees: ''
     });
     setShowNewProjectForm(false);
   };
@@ -102,7 +111,6 @@ export default function MyProjectPage() {
     setProjects(projects.filter(project => project.id !== projectId));
   };
 
-  const totalCapital = projects.reduce((sum, project) => sum + project.capital, 0);
   const totalEmployees = projects.reduce((sum, project) => sum + project.employees, 0);
   const totalClients = projects.reduce((sum, project) => sum + project.clients, 0);
   const totalMonthlyRevenue = projects.reduce((sum, project) => sum + project.monthlyRevenue, 0);
@@ -118,7 +126,6 @@ export default function MyProjectPage() {
           userType="entrepreneur"
         />
 
-        {/* Botón para agregar nuevo proyecto */}
         <div className={styles.addProjectSection}>
           <button 
             className={styles.addProjectBtn}
@@ -128,17 +135,11 @@ export default function MyProjectPage() {
           </button>
         </div>
 
-        {/* Estadísticas Generales */}
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <h3>Total Proyectos</h3>
             <div className={styles.statValue}>{projects.length}</div>
             <span className={styles.statLabel}>emprendimientos</span>
-          </div>
-          <div className={styles.statCard}>
-            <h3>Capital Total</h3>
-            <div className={styles.statValue}>{formatCurrency(totalCapital)}</div>
-            <span className={styles.statLabel}>invertido</span>
           </div>
           <div className={styles.statCard}>
             <h3>Empleados</h3>
@@ -160,9 +161,6 @@ export default function MyProjectPage() {
                 <div className={styles.projectInfo}>
                   <h3>{project.name}</h3>
                   <div className={styles.projectMeta}>
-                    <span className={`${styles.statusBadge} ${styles[project.status.toLowerCase().replace(' ', '')]}`}>
-                      {project.status}
-                    </span>
                     <span className={styles.category}>{project.category}</span>
                   </div>
                 </div>
@@ -194,12 +192,6 @@ export default function MyProjectPage() {
                     {calculateTimeInMarket(project.startDate)}
                   </span>
                 </div>
-                <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Capital Inicial:</span>
-                  <span className={styles.detailValue}>
-                    {formatCurrency(project.capital)}
-                  </span>
-                </div>
               </div>
 
               <div className={styles.projectMetrics}>
@@ -220,7 +212,6 @@ export default function MyProjectPage() {
           ))}
         </div>
 
-        {/* Mensaje cuando no hay proyectos */}
         {projects.length === 0 && (
           <div className={styles.emptyState}>
             <h3>No tienes proyectos registrados</h3>
@@ -234,7 +225,6 @@ export default function MyProjectPage() {
           </div>
         )}
 
-        {/* Modal para Nuevo Proyecto */}
         {showNewProjectForm && (
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
@@ -244,7 +234,7 @@ export default function MyProjectPage() {
                   className={styles.closeButton}
                   onClick={() => setShowNewProjectForm(false)}
                 >
-                  ×
+                  x
                 </button>
               </div>
 
@@ -292,16 +282,46 @@ export default function MyProjectPage() {
                   </div>
 
                   <div className={styles.inputGroup}>
-                    <label>Capital Inicial (COP)</label>
+                    <label>Ingresos mensuales (COP)</label>
                     <input
                       type="text"
-                      value={newProject.capital}
+                      value={newProject.monthlyIncome}
                       onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, '');
                         const formatted = new Intl.NumberFormat('es-CO').format(value);
-                        handleInputChange('capital', formatted);
+                        handleInputChange('monthlyIncome', formatted);
                       }}
                       placeholder="Ej: 50,000,000"
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label>Clientes nuestros</label>
+                    <input
+                      type="text"
+                      value={newProject.clients}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        const formatted = new Intl.NumberFormat('es-CO').format(value);
+                        handleInputChange('clients', formatted);
+                      }}
+                      placeholder="Ej: 100"
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label>Empleados</label>
+                    <input
+                      type="text"
+                      value={newProject.employees}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        const formatted = new Intl.NumberFormat('es-CO').format(value);
+                        handleInputChange('employees', formatted);
+                      }}
+                      placeholder="Ej: 50"
                       required
                     />
                   </div>
