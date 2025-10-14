@@ -3,35 +3,15 @@
 import { useState } from 'react';
 import EntrepreneurSidebar from '../../../components/EntrepreneurSidebar';
 import DashboardHeader from '../../../components/DashboardHeader';
+import { useEmprendimientos } from '../../../hooks/useEmprendimientos.js';
+import { useAuth } from '../../../hooks/useAuth.js';
 import styles from './page.module.css';
 
 export default function MyProjectPage() {
-  const [userName] = useState('Ana María Rodríguez');
+  const { user, isLoading: userLoading } = useAuth();
+  const { emprendimientos, isLoading, error, createEmprendimiento, deleteEmprendimiento } = useEmprendimientos();
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      name: 'TechFlow Solutions',
-      description: 'Plataforma SaaS que automatiza procesos de facturación y gestión financiera para PyMEs colombianas. Utilizamos IA para predecir flujos de caja y optimizar cobros.',
-      startDate: '2023-01-15',
-      category: 'Tecnología',
-      employees: 12,
-      clients: 85,
-      monthlyRevenue: 25000000
-    },
-    {
-      id: 2,
-      name: 'EcoVerde Packaging',
-      description: 'Empresa de empaques biodegradables para la industria alimentaria. Creamos soluciones sostenibles que reducen el impacto ambiental.',
-      startDate: '2022-08-20',
-      category: 'Sostenibilidad',
-      employees: 8,
-      clients: 45,
-      monthlyRevenue: 18000000
-    }
-  ]);
 
-  // CAMBIO: Agregar employees y clients al estado inicial
   const [newProject, setNewProject] = useState({
     name: '',
     description: '',
@@ -66,38 +46,40 @@ export default function MyProjectPage() {
     }
   };
 
-  const handleAddProject = (e) => {
+  const handleAddProject = async (e) => {
     e.preventDefault();
     
-    // CAMBIO: Convertir todos los valores numéricos correctamente
-    const monthlyRevenueValue = parseInt(newProject.monthlyIncome.replace(/[^0-9]/g, '')) || 0;
-    const clientsValue = parseInt(newProject.clients.replace(/[^0-9]/g, '')) || 0;
-    const employeesValue = parseInt(newProject.employees.replace(/[^0-9]/g, '')) || 0;
+    try {
+      const monthlyRevenueValue = parseInt(newProject.monthlyIncome.replace(/[^0-9]/g, '')) || 0;
+      const clientsValue = parseInt(newProject.clients.replace(/[^0-9]/g, '')) || 0;
+      const employeesValue = parseInt(newProject.employees.replace(/[^0-9]/g, '')) || 0;
 
-    const project = {
-      id: projects.length + 1,
-      name: newProject.name,
-      description: newProject.description,
-      startDate: newProject.startDate,
-      category: newProject.category,
-      employees: employeesValue,
-      clients: clientsValue,
-      monthlyRevenue: monthlyRevenueValue
-    };
+      const emprendimientoData = {
+        nombre: newProject.name,
+        descripcion: newProject.description,
+        categoria: newProject.category,
+        ingresos_mensuales: monthlyRevenueValue,
+        fecha_creacion: newProject.startDate,
+        cantidad_empleados: employeesValue,
+        cantidad_clientes: clientsValue
+      };
 
-    setProjects([...projects, project]);
-    
-    // CAMBIO: Resetear todos los campos incluyendo employees y clients
-    setNewProject({
-      name: '',
-      description: '',
-      startDate: '',
-      category: '',
-      monthlyIncome: '',
-      clients: '',
-      employees: ''
-    });
-    setShowNewProjectForm(false);
+      await createEmprendimiento(emprendimientoData);
+
+      setNewProject({
+        name: '',
+        description: '',
+        startDate: '',
+        category: '',
+        monthlyIncome: '',
+        clients: '',
+        employees: ''
+      });
+      setShowNewProjectForm(false);
+
+    } catch (err) {
+      alert('Error al crear el emprendimiento: ' + err.message);
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -107,13 +89,37 @@ export default function MyProjectPage() {
     }));
   };
 
-  const handleDeleteProject = (projectId) => {
-    setProjects(projects.filter(project => project.id !== projectId));
+  const handleDeleteProject = async (projectId) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
+      try {
+        await deleteEmprendimiento(projectId);
+      } catch (err) {
+        alert('Error al eliminar el emprendimiento: ' + err.message);
+      }
+    }
   };
 
-  const totalEmployees = projects.reduce((sum, project) => sum + project.employees, 0);
-  const totalClients = projects.reduce((sum, project) => sum + project.clients, 0);
-  const totalMonthlyRevenue = projects.reduce((sum, project) => sum + project.monthlyRevenue, 0);
+  const totalEmployees = emprendimientos.reduce((sum, project) => sum + (project.cantidad_empleados || 0), 0);
+  const totalClients = emprendimientos.reduce((sum, project) => sum + (project.cantidad_clientes || 0), 0);
+  const totalMonthlyRevenue = emprendimientos.reduce((sum, project) => sum + (project.ingresos_mensuales || 0), 0);
+
+  if (userLoading || isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loading}>Cargando...</div>
+      </div>
+    );
+  }
+
+
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <div className={styles.error}>Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>
@@ -121,7 +127,7 @@ export default function MyProjectPage() {
       
       <div className={styles.mainContent}>
         <DashboardHeader
-          title={`Mis Proyectos - ${userName}`}
+          title={`Mis Proyectos `}
           subtitle="Gestiona y supervisa todos tus emprendimientos"
           userType="entrepreneur"
         />
@@ -138,7 +144,7 @@ export default function MyProjectPage() {
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <h3>Total Proyectos</h3>
-            <div className={styles.statValue}>{projects.length}</div>
+            <div className={styles.statValue}>{emprendimientos.length}</div>
             <span className={styles.statLabel}>emprendimientos</span>
           </div>
           <div className={styles.statCard}>
@@ -149,25 +155,24 @@ export default function MyProjectPage() {
           <div className={styles.statCard}>
             <h3>Ingresos Mensuales</h3>
             <div className={styles.statValue}>{formatCurrency(totalMonthlyRevenue)}</div>
-            <span className={styles.statLabel}>promedio</span>
+            <span className={styles.statLabel}>total</span>
           </div>
         </div>
 
-        {/* Lista de Proyectos */}
         <div className={styles.projectsGrid}>
-          {projects.map((project) => (
-            <div key={project.id} className={styles.projectCard}>
+          {emprendimientos.map((project) => (
+            <div key={project.id_emprendimiento} className={styles.projectCard}>
               <div className={styles.projectHeader}>
                 <div className={styles.projectInfo}>
-                  <h3>{project.name}</h3>
+                  <h3>{project.nombre}</h3>
                   <div className={styles.projectMeta}>
-                    <span className={styles.category}>{project.category}</span>
+                    <span className={styles.category}>{project.categoria === 1 ? "Tecnología" : project.categoria === 2 ? "Fintech" : project.categoria === 3 ? "E-commerce" : project.categoria === 4 ? "Sostenibilidad" : project.categoria === 5 ? "Salud" : project.categoria === 6 ? "Educación" : project.categoria === 7 ? "Agricultura" : project.categoria === 8 ? "Alimentación" : "Servicios"}</span>
                   </div>
                 </div>
                 <div className={styles.projectActions}>
                   <button 
                     className={styles.deleteBtn}
-                    onClick={() => handleDeleteProject(project.id)}
+                    onClick={() => handleDeleteProject(project.id_emprendimiento)}
                     title="Eliminar proyecto"
                   >
                     ×
@@ -176,35 +181,35 @@ export default function MyProjectPage() {
               </div>
 
               <div className={styles.projectDescription}>
-                <p>{project.description}</p>
+                <p>{project.descripcion}</p>
               </div>
 
               <div className={styles.projectDetails}>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Fecha de Inicio:</span>
                   <span className={styles.detailValue}>
-                    {new Date(project.startDate).toLocaleDateString('es-ES')}
+                    {new Date(project.fecha_creacion).toLocaleDateString('es-ES')}
                   </span>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Tiempo en Mercado:</span>
                   <span className={styles.detailValue}>
-                    {calculateTimeInMarket(project.startDate)}
+                    {calculateTimeInMarket(project.fecha_creacion)}
                   </span>
                 </div>
               </div>
 
               <div className={styles.projectMetrics}>
                 <div className={styles.metric}>
-                  <span className={styles.metricValue}>{project.employees}</span>
+                  <span className={styles.metricValue}>{project.cantidad_empleados}</span>
                   <span className={styles.metricLabel}>Empleados</span>
                 </div>
                 <div className={styles.metric}>
-                  <span className={styles.metricValue}>{project.clients}</span>
+                  <span className={styles.metricValue}>{project.cantidad_clientes}</span>
                   <span className={styles.metricLabel}>Clientes</span>
                 </div>
                 <div className={styles.metric}>
-                  <span className={styles.metricValue}>{formatCurrency(project.monthlyRevenue)}</span>
+                  <span className={styles.metricValue}>{formatCurrency(project.ingresos_mensuales)}</span>
                   <span className={styles.metricLabel}>Ingresos/mes</span>
                 </div>
               </div>
@@ -212,7 +217,7 @@ export default function MyProjectPage() {
           ))}
         </div>
 
-        {projects.length === 0 && (
+        {emprendimientos.length === 0 && (
           <div className={styles.emptyState}>
             <h3>No tienes proyectos registrados</h3>
             <p>Comienza agregando tu primer emprendimiento</p>
@@ -259,15 +264,15 @@ export default function MyProjectPage() {
                       required
                     >
                       <option value="">Selecciona una categoría</option>
-                      <option value="Tecnología">Tecnología</option>
-                      <option value="Fintech">Fintech</option>
-                      <option value="E-commerce">E-commerce</option>
-                      <option value="Sostenibilidad">Sostenibilidad</option>
-                      <option value="Salud">Salud</option>
-                      <option value="Educación">Educación</option>
-                      <option value="Agricultura">Agricultura</option>
-                      <option value="Alimentación">Alimentación</option>
-                      <option value="Servicios">Servicios</option>
+                      <option value="1">Tecnología</option>
+                      <option value="2">Fintech</option>
+                      <option value="3">E-commerce</option>
+                      <option value="4">Sostenibilidad</option>
+                      <option value="5">Salud</option>
+                      <option value="6">Educación</option>
+                      <option value="7">Agricultura</option>
+                      <option value="8">Alimentación</option>
+                      <option value="9">Servicios</option>
                     </select>
                   </div>
 
