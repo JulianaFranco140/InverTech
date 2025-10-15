@@ -16,12 +16,10 @@ function verifyToken(request) {
   }
 }
 
-// GET - Obtener emprendimientos del usuario
 export async function GET(request) {
   try {
     const decoded = verifyToken(request);
     
-    // Verificar que sea un emprendedor (rol_id = 1)
     if (decoded.role !== 1) {
       return NextResponse.json(
         { error: 'Acceso no autorizado' },
@@ -44,12 +42,10 @@ export async function GET(request) {
   }
 }
 
-// POST - Crear nuevo emprendimiento
 export async function POST(request) {
   try {
     const decoded = verifyToken(request);
     
-    // Verificar que sea un emprendedor (rol_id = 1)
     if (decoded.role !== 1) {
       return NextResponse.json(
         { error: 'Acceso no autorizado' },
@@ -59,7 +55,6 @@ export async function POST(request) {
 
     const body = await request.json();
     
-    // Validar campos requeridos
     const requiredFields = ['nombre', 'descripcion', 'categoria', 'ingresos_mensuales', 'fecha_creacion', 'cantidad_empleados', 'cantidad_clientes'];
     const missingFields = requiredFields.filter(field => !body[field]);
     
@@ -70,7 +65,6 @@ export async function POST(request) {
       );
     }
 
-    // Crear el emprendimiento
     const emprendimientoData = {
       nombre: body.nombre,
       descripcion: body.descripcion,

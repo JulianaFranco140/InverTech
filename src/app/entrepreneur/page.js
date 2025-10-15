@@ -180,7 +180,6 @@ export default function EntrepreneurDashboard() {
             </div>
           </div>
 
-          {/* Tarjetas de Proyectos */}
           <div className={styles.projectsSection}>
             <h2>Mis Emprendimientos</h2>
             <div className={styles.projectsGrid}>
@@ -239,7 +238,6 @@ export default function EntrepreneurDashboard() {
             </div>
           </div>
 
-          {/* Métricas Globales */}
           <div className={styles.metricsSection}>
             <h2>Métricas Generales</h2>
             <div className={styles.metricsGrid}>
