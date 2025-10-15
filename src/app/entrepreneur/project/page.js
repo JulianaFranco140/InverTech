@@ -155,10 +155,11 @@ if (userLoading || isLoading) {
             <span className={styles.statLabel}>colaboradores</span>
           </div>
           <div className={styles.statCard}>
-            <h3>Ingresos Mensuales</h3>
-            <div className={styles.statValue}>{formatCurrency(totalMonthlyRevenue)}</div>
-            <span className={styles.statLabel}>total</span>
+            <h3>Clientes</h3>
+            <div className={styles.statValue}>{totalClients}</div>
+            <span className={styles.statLabel}>clientes</span>
           </div>
+          
         </div>
 
         <div className={styles.projectsGrid}>

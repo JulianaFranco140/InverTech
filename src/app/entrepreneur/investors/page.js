@@ -83,26 +83,7 @@ export default function InvestorsPage() {
     }).format(amount);
   };
 
-  const getInterestBadge = (interest) => {
-    const badges = {
-      very_high: { text: 'Muy Alto', color: 'success' },
-      high: { text: 'Alto', color: 'primary' },
-      medium: { text: 'Medio', color: 'warning' },
-      low: { text: 'Bajo', color: 'neutral' }
-    };
-    return badges[interest] || badges.medium;
-  };
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      pending: { text: 'Pendiente', color: 'neutral' },
-      interested: { text: 'Interesado', color: 'primary' },
-      negotiating: { text: 'Negociando', color: 'warning' },
-      considering: { text: 'Considerando', color: 'info' },
-      meeting_scheduled: { text: 'Reunión Programada', color: 'success' }
-    };
-    return badges[status] || badges.pending;
-  };
 
   const totalInvestment = investors.reduce((sum, investor) => sum + investor.investment, 0);
   const averageInvestment = totalInvestment / investors.length;
@@ -172,7 +153,7 @@ export default function InvestorsPage() {
                   </div>
                 </div>
 
-                
+        
               </div>
 
               <div className={styles.investorActions}>
