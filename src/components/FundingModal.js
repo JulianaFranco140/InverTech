@@ -19,6 +19,12 @@ export default function FundingModal({ isOpen, onClose }) {
     'Deuda Convertible'
   ];
 
+    const projectTypes = [
+    'Proyecto 1',
+    'Proyecto 2',
+    'Proyecto 3'
+  ];
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -54,7 +60,7 @@ export default function FundingModal({ isOpen, onClose }) {
   };
 
   const handleFiles = (files) => {
-    const newFiles = Array.from(files).slice(0, 5); // Máximo 5 archivos
+    const newFiles = Array.from(files).slice(0, 5);
     setFormData(prev => ({
       ...prev,
       documents: [...prev.documents, ...newFiles].slice(0, 5)
@@ -122,6 +128,22 @@ export default function FundingModal({ isOpen, onClose }) {
               >
                 <option value="">Seleccionar...</option>
                 {fundingTypes.map((type, index) => (
+                  <option key={index} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="type">Elige tu proyecto</label>
+              <select
+                id="type"
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Seleccionar...</option>
+                {projectTypes.map((type, index) => (
                   <option key={index} value={type}>{type}</option>
                 ))}
               </select>

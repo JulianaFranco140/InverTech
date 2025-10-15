@@ -87,7 +87,6 @@ export default function DashboardPage() {
           notificationCount={1}
         />
 
-        {/* Metrics Cards */}
         <div className={styles.metricsGrid}>
           {metricsData.map((metric, index) => (
             <MetricCard
@@ -101,9 +100,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Content Grid */}
         <div className={styles.contentGrid}>
-          {/* Portfolio Performance */}
           <div className={styles.chartSection}>
             <h2 className={styles.sectionTitle}>Rendimiento del Portfolio</h2>
             <p className={styles.sectionSubtitle}>Últimos 12 meses</p>
@@ -123,7 +120,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Recommended Opportunities */}
           <div className={styles.opportunitiesSection}>
             <h2 className={styles.sectionTitle}>Oportunidades Recomendadas</h2>
             <p className={styles.sectionSubtitle}>Basado en tu perfil de riesgo</p>

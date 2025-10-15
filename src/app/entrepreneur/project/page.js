@@ -103,14 +103,16 @@ export default function MyProjectPage() {
   const totalClients = emprendimientos.reduce((sum, project) => sum + (project.cantidad_clientes || 0), 0);
   const totalMonthlyRevenue = emprendimientos.reduce((sum, project) => sum + (project.ingresos_mensuales || 0), 0);
 
-  if (userLoading || isLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loading}>Cargando...</div>
+if (userLoading || isLoading) {
+  return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.loading}>
+        <div className={styles.loadingSpinner}></div>
+        Cargando tus proyectos...
       </div>
-    );
-  }
-
+    </div>
+  );
+}
 
 
   if (error) {

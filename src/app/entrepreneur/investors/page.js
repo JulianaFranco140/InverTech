@@ -138,7 +138,6 @@ export default function InvestorsPage() {
           </div>
         </div>
 
-        {/* Lista de Inversionistas */}
         <div className={styles.investorsGrid}>
           {investors.map((investor) => (
             <div key={investor.id} className={styles.investorCard}>
@@ -151,14 +150,7 @@ export default function InvestorsPage() {
                   <p className={styles.investorCompany}>{investor.company}</p>
                   <span className={styles.investorType}>{investor.type}</span>
                 </div>
-                <div className={styles.investorBadges}>
-                  <span className={`${styles.badge} ${styles[getInterestBadge(investor.interest).color]}`}>
-                    {getInterestBadge(investor.interest).text}
-                  </span>
-                  <span className={`${styles.badge} ${styles[getStatusBadge(investor.status).color]}`}>
-                    {getStatusBadge(investor.status).text}
-                  </span>
-                </div>
+                
               </div>
 
               <div className={styles.investorContent}>
@@ -180,16 +172,14 @@ export default function InvestorsPage() {
                   </div>
                 </div>
 
-                <div className={styles.lastContact}>
-                  <span>Último contacto: {new Date(investor.lastContact).toLocaleDateString('es-ES')}</span>
-                </div>
+                
               </div>
 
               <div className={styles.investorActions}>
                 <button className={styles.contactBtn}>
                   Contactar
                 </button>
-                <button className={styles.scheduleBtn}>
+                <button className={styles.viewProfileBtn}>
                   Programar Reunión
                 </button>
                 <button className={styles.viewProfileBtn}>
