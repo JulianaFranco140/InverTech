@@ -1,9 +1,28 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className={styles.page}>
       <Header />
@@ -240,6 +259,19 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {showScrollTop && (
+        <button 
+          className={styles.scrollToTopBtn}
+          onClick={scrollToTop}
+          aria-label="Volver al inicio"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 14L12 9L17 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
+

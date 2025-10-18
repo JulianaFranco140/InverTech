@@ -68,11 +68,11 @@
 }
 
 .inversionistaBtn {
-  background: linear-gradient(135deg, #667eea 0%, #1E3A8A 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .inversionistaBtn:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #1A365D 100%);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
@@ -87,7 +87,47 @@
   box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
 }
 
-/* Secciones de Roles */
+.scrollToTopBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.scrollToTopBtn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.scrollToTopBtn:active {
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .roleSection {
   min-height: 100vh;
   padding: 80px 20px;
@@ -167,8 +207,46 @@
 }
 
 .featureIcon {
-  font-size: 3rem;
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  transition: all 0.3s ease;
+}
+
+.investorIcon {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 2px solid #3B82F6;
+}
+
+.entrepreneurIcon {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 2px solid #10B981;
+}
+
+.featureCard:hover .investorIcon {
+  background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%);
+  transform: scale(1.1);
+}
+
+.featureCard:hover .investorIcon svg {
+  stroke: white;
+}
+
+.featureCard:hover .entrepreneurIcon {
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  transform: scale(1.1);
+}
+
+.featureCard:hover .entrepreneurIcon svg {
+  stroke: white;
+}
+
+.featureIcon svg {
+  transition: stroke 0.3s ease;
 }
 
 .featureCard h3 {
@@ -222,12 +300,10 @@
   text-decoration: underline;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .heroTitle {
     font-size: 2rem;
@@ -246,6 +322,18 @@ html {
   .emprendedorBtn {
     width: 100%;
     max-width: 280px;
+  }
+
+  .scrollToTopBtn {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .scrollToTopBtn svg {
+    width: 20px;
+    height: 20px;
   }
 
   .roleSection {
@@ -269,6 +357,16 @@ html {
     padding: 24px;
   }
 
+  .featureIcon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .featureIcon svg {
+    width: 32px;
+    height: 32px;
+  }
+
   .roleIcon {
     width: 80px;
     height: 80px;
@@ -284,6 +382,13 @@ html {
 @media (max-width: 480px) {
   .heroTitle {
     font-size: 1.75rem;
+  }
+
+  .scrollToTopBtn {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
   }
 
   .roleSection {
@@ -303,7 +408,13 @@ html {
   }
 
   .featureIcon {
-    font-size: 2.5rem;
+    width: 56px;
+    height: 56px;
+  }
+  
+  .featureIcon svg {
+    width: 28px;
+    height: 28px;
   }
 }
 
