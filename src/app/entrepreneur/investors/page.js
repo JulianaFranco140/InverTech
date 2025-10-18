@@ -83,7 +83,7 @@ export default function InvestorsPage() {
     }).format(amount);
   };
 
-
+  
 
   const totalInvestment = investors.reduce((sum, investor) => sum + investor.investment, 0);
   const averageInvestment = totalInvestment / investors.length;

@@ -42,7 +42,6 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 40px;
 }
 
 .heroButtons {
@@ -52,40 +51,180 @@
   flex-wrap: wrap;
 }
 
-.inversionistaBtn {
-  background: var(--green-button);
+.inversionistaBtn,
+.emprendedorBtn {
+  display: inline-block;
+  text-decoration: none;
   border: none;
   color: white;
-  padding: 12px 24px;
-  border-radius: 6px;
+  padding: 16px 32px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 160px;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  text-align: center;
+}
+
+.inversionistaBtn {
+  background: linear-gradient(135deg, #667eea 0%, #1E3A8A 100%);
 }
 
 .inversionistaBtn:hover {
-  background: var(--green-button-hover);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #5a67d8 0%, #1A365D 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .emprendedorBtn {
-  background: var(--dark-blue);
-  border: none;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 160px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .emprendedorBtn:hover {
-  background: var(--darker-blue);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #0d9488 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* Secciones de Roles */
+.roleSection {
+  min-height: 100vh;
+  padding: 80px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roleSection:nth-child(2) {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.roleSection:nth-child(3) {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+}
+
+.roleSectionContent {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.roleHeader {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.roleIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  margin: 0 auto 32px;
+  color: white;
+}
+
+.roleSection:nth-child(3) .roleIcon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.roleTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.roleSubtitle {
+  font-size: 1.25rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+.featureCard {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.featureCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.featureIcon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.featureCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.featureCard p {
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.roleCTA {
+  text-align: center;
+}
+
+.ctaButton {
+  display: inline-block;
+  text-decoration: none;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.ctaButton:hover {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30, 41, 59, 0.3);
+}
+
+.ctaSubtext {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.ctaSubtext a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ctaSubtext a:hover {
+  text-decoration: underline;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
 /* Responsive design */
@@ -103,14 +242,70 @@
     align-items: center;
   }
   
-  .investorBtn,
-  .entrepreneurBtn {
+  .inversionistaBtn,
+  .emprendedorBtn {
     width: 100%;
     max-width: 280px;
   }
+
+  .roleSection {
+    padding: 60px 16px;
+  }
+
+  .roleTitle {
+    font-size: 2rem;
+  }
+
+  .roleSubtitle {
+    font-size: 1.1rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .featureCard {
+    padding: 24px;
+  }
+
+  .roleIcon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+  }
+
+  .roleIcon svg {
+    width: 40px;
+    height: 40px;
+  }
 }
 
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 1.75rem;
+  }
 
+  .roleSection {
+    padding: 40px 16px;
+  }
+
+  .roleTitle {
+    font-size: 1.75rem;
+  }
+
+  .featuresGrid {
+    gap: 16px;
+  }
+
+  .featureCard {
+    padding: 20px;
+  }
+
+  .featureIcon {
+    font-size: 2.5rem;
+  }
+}
 
 .main li:not(:last-of-type) {
   margin-bottom: 8px;
@@ -175,7 +370,6 @@ a.secondary {
   flex-shrink: 0;
 }
 
-/* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   a.primary:hover {
     background: var(--button-primary-hover);
