@@ -10,7 +10,7 @@ export default function FundingModal({ isOpen, onClose }) {
     amount: '',
     revenue: '',
     type: '',
-    emprendimiento_id: '', // Cambiado de 'project' a 'emprendimiento_id'
+    emprendimiento_id: '', 
     purpose: '',
     timeline: '',
     documents: []
