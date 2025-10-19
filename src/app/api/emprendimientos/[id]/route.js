@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Emprendimiento } from '../../../../models/Emprendimiento.js';
+import { deleteFile } from '../../../../lib/supabase.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
@@ -45,15 +46,42 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await Emprendimiento.delete(id);
+    // Intentar eliminar (la lógica de verificación está en el modelo)
+    const result = await Emprendimiento.delete(id);
     
+    // Si llegamos aquí, la eliminación fue exitosa
+    let message = 'Emprendimiento eliminado exitosamente';
+    
+    if (result.solicitudes_eliminadas > 0) {
+      message += `. También se eliminaron ${result.solicitudes_eliminadas} solicitudes de financiamiento pendientes.`;
+    }
+
+    // TODO: Limpiar archivos de Supabase si es necesario
+    // Esta funcionalidad se puede implementar más adelante si se necesita
+
     return NextResponse.json({
       success: true,
-      message: 'Emprendimiento eliminado exitosamente'
+      message: message,
+      details: {
+        emprendimiento_eliminado: result.emprendimiento.nombre,
+        solicitudes_eliminadas: result.solicitudes_eliminadas
+      }
     });
 
   } catch (error) {
     console.error('Error deleting emprendimiento:', error);
+    
+    // Verificar si es un error de solicitudes activas
+    if (error.message.includes('solicitud de financiamiento')) {
+      return NextResponse.json(
+        { 
+          error: error.message,
+          type: 'ACTIVE_FUNDING_ERROR'
+        },
+        { status: 409 } // Conflict
+      );
+    }
+    
     return NextResponse.json(
       { error: error.message || 'Error interno del servidor' },
       { status: 500 }

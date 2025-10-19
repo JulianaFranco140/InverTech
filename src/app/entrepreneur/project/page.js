@@ -90,15 +90,29 @@ export default function MyProjectPage() {
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este proyecto?')) {
+    // Buscar el proyecto para obtener su nombre
+    const project = emprendimientos.find(emp => emp.id_emprendimiento === projectId);
+    const projectName = project ? project.nombre : 'el proyecto';
+
+    if (window.confirm(`¿Estás seguro de que deseas eliminar "${projectName}"?\n\nEsta acción no se puede deshacer.`)) {
       try {
-        await deleteEmprendimiento(projectId);
+        const result = await deleteEmprendimiento(projectId);
+        
+        // Mostrar mensaje de éxito con detalles
+        alert(result.message);
+        
       } catch (err) {
-        alert('Error al eliminar el emprendimiento: ' + err.message);
+        console.error('Error al eliminar emprendimiento:', err);
+        
+        // Mostrar mensaje de error más específico
+        if (err.message.includes('solicitud de financiamiento')) {
+          alert(`❌ No se puede eliminar el proyecto\n\n${err.message}`);
+        } else {
+          alert('Error al eliminar el emprendimiento: ' + err.message);
+        }
       }
     }
   };
-
   const totalEmployees = emprendimientos.reduce((sum, project) => sum + (project.cantidad_empleados || 0), 0);
   const totalClients = emprendimientos.reduce((sum, project) => sum + (project.cantidad_clientes || 0), 0);
   const totalMonthlyRevenue = emprendimientos.reduce((sum, project) => sum + (project.ingresos_mensuales || 0), 0);

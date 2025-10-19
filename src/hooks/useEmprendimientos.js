@@ -56,22 +56,31 @@ export function useEmprendimientos(shouldFetch = true) {
     }
   };
 
-  // Eliminar emprendimiento
+  // Eliminar emprendimiento con mejor manejo de errores
   const deleteEmprendimiento = async (id) => {
     try {
       const response = await fetch(`/api/emprendimientos/${id}`, {
         method: 'DELETE',
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al eliminar emprendimiento');
+        // Manejar diferentes tipos de errores
+        if (data.type === 'ACTIVE_FUNDING_ERROR') {
+          throw new Error(data.error);
+        }
+        throw new Error(data.error || 'Error al eliminar emprendimiento');
       }
 
       // Actualizar la lista local
       setEmprendimientos(prev => prev.filter(emp => emp.id_emprendimiento !== id));
       
-      return true;
+      return {
+        success: true,
+        message: data.message,
+        details: data.details
+      };
     } catch (err) {
       console.error('Error deleting emprendimiento:', err);
       throw err;
