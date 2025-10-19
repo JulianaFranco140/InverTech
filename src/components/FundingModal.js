@@ -1,11 +1,16 @@
 'use client';
 import { useState } from 'react';
+import { useEmprendimientos } from '../hooks/useEmprendimientos';
 import styles from './FundingModal.module.css';
 
 export default function FundingModal({ isOpen, onClose }) {
+  const { emprendimientos, isLoading } = useEmprendimientos();
+  
   const [formData, setFormData] = useState({
     amount: '',
+    revenue: '',
     type: '',
+    emprendimiento_id: '', // Cambiado de 'project' a 'emprendimiento_id'
     purpose: '',
     timeline: '',
     documents: []
@@ -17,12 +22,6 @@ export default function FundingModal({ isOpen, onClose }) {
     'Capital de Riesgo',
     'Préstamo',
     'Deuda Convertible'
-  ];
-
-    const projectTypes = [
-    'Proyecto 1',
-    'Proyecto 2',
-    'Proyecto 3'
   ];
 
   const handleInputChange = (e) => {
@@ -60,10 +59,28 @@ export default function FundingModal({ isOpen, onClose }) {
   };
 
   const handleFiles = (files) => {
-    const newFiles = Array.from(files).slice(0, 5);
+    const validFiles = Array.from(files).filter(file => {
+
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/jpg'
+      ];
+      
+
+      const maxSize = 10 * 1024 * 1024;
+      
+      return allowedTypes.includes(file.type) && file.size <= maxSize;
+    });
+
     setFormData(prev => ({
       ...prev,
-      documents: [...prev.documents, ...newFiles].slice(0, 5)
+      documents: [...prev.documents, ...validFiles].slice(0, 5)
     }));
   };
 
@@ -74,17 +91,49 @@ export default function FundingModal({ isOpen, onClose }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Solicitud de financiamiento:', formData);
-    // Aquí iría la lógica para enviar la solicitud
-    onClose();
+    
+    try {
+      const submitFormData = new FormData();
+      
+      submitFormData.append('emprendimiento_id', formData.emprendimiento_id);
+      submitFormData.append('amount', formData.amount);
+      submitFormData.append('revenue', formData.revenue);
+      submitFormData.append('type', formData.type);
+      submitFormData.append('purpose', formData.purpose);
+      submitFormData.append('timeline', formData.timeline);
+
+      // Agregar archivos
+      formData.documents.forEach(file => {
+        submitFormData.append('documents', file);
+      });
+
+      const response = await fetch('/api/solicitudes-financiamiento', {
+        method: 'POST',
+        body: submitFormData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Solicitud de financiamiento enviada exitosamente');
+        handleCancel(); 
+      } else {
+        throw new Error(result.error || 'Error al enviar la solicitud');
+      }
+    } catch (error) {
+      console.error('Error submitting funding request:', error);
+      alert('Error al enviar la solicitud: ' + error.message);
+    }
   };
 
   const handleCancel = () => {
     setFormData({
       amount: '',
+      revenue: '',
       type: '',
+      emprendimiento_id: '',
       purpose: '',
       timeline: '',
       documents: []
@@ -105,14 +154,31 @@ export default function FundingModal({ isOpen, onClose }) {
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="amount">Monto Solicitado ($)</label>
+              <label htmlFor="amount">Monto Solicitado (COP)</label>
               <input
                 type="number"
                 id="amount"
                 name="amount"
                 value={formData.amount}
                 onChange={handleInputChange}
-                placeholder="25,000"
+                placeholder="50000000"
+                min="1000000"
+                step="1000000"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="revenue">Ganancia neta anual (COP)</label>
+              <input
+                type="number"
+                id="revenue"
+                name="revenue"
+                value={formData.revenue}
+                onChange={handleInputChange}
+                placeholder="25000000"
+                min="0"
+                step="1000000"
                 required
               />
             </div>
@@ -132,21 +198,38 @@ export default function FundingModal({ isOpen, onClose }) {
                 ))}
               </select>
             </div>
-
+ 
             <div className={styles.formGroup}>
-              <label htmlFor="type">Elige tu proyecto</label>
+              <label htmlFor="emprendimiento_id">Proyecto a Financiar</label>
               <select
-                id="type"
-                name="type"
-                value={formData.type}
+                id="emprendimiento_id"
+                name="emprendimiento_id"
+                value={formData.emprendimiento_id}
                 onChange={handleInputChange}
                 required
               >
-                <option value="">Seleccionar...</option>
-                {projectTypes.map((type, index) => (
-                  <option key={index} value={type}>{type}</option>
-                ))}
+                <option value="">
+                  {isLoading ? "Cargando proyectos..." : "Selecciona un proyecto"}
+                </option>
+                {!isLoading && emprendimientos && emprendimientos.length > 0 ? (
+                  emprendimientos.map((proyecto) => (
+                    <option key={proyecto.id_emprendimiento} value={proyecto.id_emprendimiento}>
+                      {proyecto.nombre}
+                    </option>
+                  ))
+                ) : (
+                  !isLoading && (
+                    <option value="" disabled>
+                      No tienes proyectos registrados
+                    </option>
+                  )
+                )}
               </select>
+              {!isLoading && emprendimientos && emprendimientos.length === 0 && (
+                <small className={styles.helpText}>
+                  Primero debes registrar un proyecto en la sección "Mis Proyectos"
+                </small>
+              )}
             </div>
           </div>
 
@@ -177,7 +260,7 @@ export default function FundingModal({ isOpen, onClose }) {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Documentos de Respaldo</label>
+            <label>Documentos de Respaldo (máximo 5 archivos, 10MB cada uno)</label>
             <div 
               className={`${styles.fileUpload} ${dragActive ? styles.dragActive : ''}`}
               onDragEnter={handleDrag}
@@ -187,18 +270,19 @@ export default function FundingModal({ isOpen, onClose }) {
             >
               <div className={styles.uploadIcon}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C18.1046 10 19 10.8954 19 12V18C19 19.1046 18.1046 20 17 20H7C5.89543 20 5 19.1046 5 18V12C5 10.8954 5.89543 10 7 10Z" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M12 14V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </div>
               <div className={styles.uploadText}>
-                <p>Arrastra archivos aquí o haz clic para seleccionar</p>
-                <span>PDF, Word, Excel - Máximo 10MB</span>
+                <p>Arrastra archivos aquí o <span style={{color: '#3B82F6', cursor: 'pointer'}}>haz clic para seleccionar</span></p>
+                <span>PDF, DOC, XLS, JPG, PNG - Máximo 10MB cada uno</span>
               </div>
               <input
                 type="file"
                 multiple
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                 onChange={handleFileInput}
                 className={styles.fileInput}
               />
@@ -208,7 +292,9 @@ export default function FundingModal({ isOpen, onClose }) {
               <div className={styles.fileList}>
                 {formData.documents.map((file, index) => (
                   <div key={index} className={styles.fileItem}>
-                    <span className={styles.fileName}>{file.name}</span>
+                    <span className={styles.fileName}>
+                      {file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                    </span>
                     <button
                       type="button"
                       onClick={() => removeFile(index)}
@@ -233,9 +319,16 @@ export default function FundingModal({ isOpen, onClose }) {
             <button 
               type="submit"
               className={styles.submitButton}
-              disabled={!formData.amount || !formData.type || !formData.purpose || !formData.timeline}
+              disabled={
+                !formData.amount || 
+                !formData.type || 
+                !formData.emprendimiento_id || 
+                !formData.purpose || 
+                !formData.timeline ||
+                isLoading
+              }
             >
-              Enviar Solicitud
+              {isLoading ? 'Cargando...' : 'Enviar Solicitud'}
             </button>
           </div>
         </form>
