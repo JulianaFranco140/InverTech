@@ -21,7 +21,6 @@ export default function FundingModal({ isOpen, onClose }) {
   const [dragActive, setDragActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // ===== ÚNICO CAMBIO: Estado para notificaciones =====
   const [notification, setNotification] = useState({
     isOpen: false,
     type: 'info',
@@ -35,7 +34,6 @@ export default function FundingModal({ isOpen, onClose }) {
     'Deuda Convertible'
   ];
 
-  // ===== ÚNICO CAMBIO: Función para mostrar notificaciones =====
   const showNotification = (type, title, message, autoClose = true) => {
     setNotification({
       isOpen: true,
@@ -97,7 +95,6 @@ export default function FundingModal({ isOpen, onClose }) {
       ];
       
       if (!validTypes.includes(file.type)) {
-        // ===== CAMBIO: Usar notificación estilizada =====
         showNotification(
           'warning',
           'Tipo de archivo no válido',
@@ -108,7 +105,6 @@ export default function FundingModal({ isOpen, onClose }) {
       }
       
       if (file.size > 10 * 1024 * 1024) { // 10MB
-        // ===== CAMBIO: Usar notificación estilizada =====
         showNotification(
           'warning',
           'Archivo muy grande',
@@ -128,7 +124,6 @@ export default function FundingModal({ isOpen, onClose }) {
       }));
       
       if (validFiles.length < files.length) {
-        // ===== CAMBIO: Usar notificación estilizada =====
         showNotification(
           'info',
           'Algunos archivos omitidos',
@@ -163,7 +158,6 @@ export default function FundingModal({ isOpen, onClose }) {
       submitFormData.append('purpose', formData.purpose);
       submitFormData.append('timeline', formData.timeline);
 
-      // Agregar archivos
       formData.documents.forEach(file => {
         submitFormData.append('documents', file);
       });
@@ -192,7 +186,6 @@ export default function FundingModal({ isOpen, onClose }) {
           false
         );
         
-        // Resetear formulario después de un delay
         setTimeout(() => {
           handleCancel();
         }, 4000);
