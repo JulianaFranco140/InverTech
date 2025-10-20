@@ -133,18 +133,23 @@
 .fileUpload {
   border: 2px dashed #d1d5db;
   border-radius: 12px;
-  padding: 32px;
+  padding: 32px 20px;
   text-align: center;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: all 0.3s ease;
   position: relative;
   background: #f9fafb;
 }
 
-.fileUpload:hover,
-.fileUpload.dragActive {
+.fileUpload:hover {
   border-color: #3b82f6;
-  background: #eff6ff;
+  background: #f8fafc;
+}
+
+.fileUpload.dragActive {
+  border-color: #3b82f6 !important;
+  background: #eff6ff !important;
+  transform: scale(1.02);
 }
 
 .uploadIcon {
@@ -158,22 +163,24 @@
   color: #3b82f6;
 }
 
-.uploadText p {
+.fileUpload p {
+  margin: 8px 0;
   color: #374151;
-  font-weight: 500;
-  margin: 0 0 4px 0;
-  font-size: 16px;
 }
 
-.uploadText span {
+.browseText {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.fileTypes {
+  font-size: 0.875rem;
   color: #6b7280;
-  font-size: 14px;
 }
 
 .fileInput {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
@@ -189,43 +196,72 @@
 
 .fileItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  background: #f3f4f6;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-}
-
-.fileName {
-  color: #374151;
-  font-size: 14px;
-  font-weight: 500;
-  flex: 1;
-  text-align: left;
-}
-
-.removeFile {
-  background: none;
-  border: none;
-  color: #ef4444;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
-.removeFile:hover {
-  background: #fee2e2;
+.fileItem:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
-.modalActions {
+.fileIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.fileInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fileName {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.fileSize {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.removeFileBtn {
+  background: #808080;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.removeFileBtn:hover:not(:disabled) {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.removeFileBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.formActions {
   display: flex;
   gap: 16px;
   justify-content: flex-end;
@@ -244,11 +280,20 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.cancelButton:hover {
+.cancelButton:hover:not(:disabled) {
   background: #e2e8f0;
   color: #475569;
+}
+
+.cancelButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .submitButton {
@@ -261,6 +306,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 140px;
 }
 
 .submitButton:hover:not(:disabled) {
@@ -270,12 +320,34 @@
 
 .submitButton:disabled {
   background: #9ca3af;
+  color: #fff;
   cursor: not-allowed;
-  transform: none;
+  transform: none !important;
   box-shadow: none;
+  opacity: 0.6;
 }
 
-/* Responsive Design */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.helpText {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .modalOverlay {
     padding: 10px;
@@ -283,6 +355,7 @@
   
   .modalContent {
     max-height: 95vh;
+    margin: 10px;
   }
   
   .modalHeader {
@@ -302,13 +375,23 @@
     padding: 24px 16px;
   }
   
-  .modalActions {
+  .fileItem {
+    padding: 10px;
+  }
+  
+  .fileName {
+    font-size: 0.85rem;
+  }
+  
+  .formActions {
     flex-direction: column-reverse;
+    gap: 12px;
   }
   
   .cancelButton,
   .submitButton {
     width: 100%;
     justify-content: center;
+    min-width: auto;
   }
 }
