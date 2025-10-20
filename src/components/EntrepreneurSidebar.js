@@ -13,7 +13,7 @@ export default function EntrepreneurSidebar() {
   const menuItems = [
     { name: 'Dashboard', icon: '', href: '/entrepreneur' },
     { name: 'Mis Proyectos', icon: '', href: '/entrepreneur/project' },,
-    { name: 'Simulaciones', icon: '', href: '/entrepreneur/simulations' },
+    { name: 'Mis solicitudes', icon: '', href: '/entrepreneur/requests' },
     { name: 'Inversionistas', icon: '', href: '/entrepreneur/investors' },
     
   ];

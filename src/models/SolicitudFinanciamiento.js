@@ -3,7 +3,6 @@ import sql from '../lib/db.js';
 export class SolicitudFinanciamiento {
   static async create(solicitudData, documentos = []) {
     try {
-      // Crear solicitud
       const solicitud = await sql`
         INSERT INTO solicitudes_financiamiento (
           emprendedor_id,
@@ -165,7 +164,6 @@ export class SolicitudFinanciamiento {
         WHERE solicitud_id = ${id_solicitud}
       `;
 
-      // Eliminar solicitud (los documentos se eliminan automáticamente por CASCADE)
       const result = await sql`
         DELETE FROM solicitudes_financiamiento 
         WHERE id_solicitud = ${id_solicitud} 
