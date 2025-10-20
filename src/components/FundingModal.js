@@ -10,7 +10,7 @@ export default function FundingModal({ isOpen, onClose }) {
     amount: '',
     revenue: '',
     type: '',
-    emprendimiento_id: '', 
+    emprendimiento_id: '',
     purpose: '',
     timeline: '',
     documents: []
@@ -104,7 +104,6 @@ export default function FundingModal({ isOpen, onClose }) {
       submitFormData.append('purpose', formData.purpose);
       submitFormData.append('timeline', formData.timeline);
 
-      // Agregar archivos
       formData.documents.forEach(file => {
         submitFormData.append('documents', file);
       });

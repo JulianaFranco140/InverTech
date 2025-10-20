@@ -1,0 +1,172 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transform: scale(0.95);
+  animation: modalAppear 0.3s ease-out forwards;
+}
+
+@keyframes modalAppear {
+  to {
+    transform: scale(1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  padding: 24px;
+  gap: 16px;
+}
+
+.iconContainer {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.message {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #6b7280;
+  margin: 0;
+}
+
+.closeButton {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.progressBar {
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: currentColor;
+  width: 100%;
+  animation: progressShrink linear;
+  transform-origin: left;
+}
+
+@keyframes progressShrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Variantes de tipo */
+.success .iconContainer {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.success .progress {
+  background: #16a34a;
+}
+
+.error .iconContainer {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.error .progress {
+  background: #dc2626;
+}
+
+.warning .iconContainer {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.warning .progress {
+  background: #d97706;
+}
+
+.info .iconContainer {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.info .progress {
+  background: #2563eb;
+}
+
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 16px;
+  }
+  
+  .header {
+    padding: 20px;
+    gap: 12px;
+  }
+  
+  .iconContainer {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+  }
+  
+  .message {
+    font-size: 0.875rem;
+  }
+}

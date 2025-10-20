@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import EntrepreneurSidebar from '../../../components/EntrepreneurSidebar';
 import DashboardHeader from '../../../components/DashboardHeader';
+import NotificacionModal from '../../../components/NotificacionModal';
+import ConfirmModal from '../../../components/ConfirmModal';
 import { useEmprendimientos } from '../../../hooks/useEmprendimientos.js';
 import { useAuth } from '../../../hooks/useAuth.js';
 import styles from './page.module.css';
@@ -11,6 +13,21 @@ export default function MyProjectPage() {
   const { user, isLoading: userLoading } = useAuth();
   const { emprendimientos, isLoading, error, createEmprendimiento, deleteEmprendimiento } = useEmprendimientos();
   const [showNewProjectForm, setShowNewProjectForm] = useState(false);
+  
+
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  });
+  
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    projectId: null,
+    projectName: '',
+    isLoading: false
+  });
 
   const [newProject, setNewProject] = useState({
     name: '',
@@ -46,6 +63,21 @@ export default function MyProjectPage() {
     }
   };
 
+  const showNotification = (type, title, message, autoClose = true) => {
+    setNotification({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+    
+    if (autoClose) {
+      setTimeout(() => {
+        setNotification(prev => ({ ...prev, isOpen: false }));
+      }, 5000);
+    }
+  };
+
   const handleAddProject = async (e) => {
     e.preventDefault();
     
@@ -76,9 +108,20 @@ export default function MyProjectPage() {
         employees: ''
       });
       setShowNewProjectForm(false);
+      
+      showNotification(
+        'success',
+        '¡Proyecto creado exitosamente!',
+        `El proyecto "${newProject.name}" ha sido registrado correctamente.`
+      );
 
     } catch (err) {
-      alert('Error al crear el emprendimiento: ' + err.message);
+      showNotification(
+        'error',
+        'Error al crear el proyecto',
+        `No se pudo crear el proyecto: ${err.message}`,
+        false
+      );
     }
   };
 
@@ -89,45 +132,85 @@ export default function MyProjectPage() {
     }));
   };
 
-  const handleDeleteProject = async (projectId) => {
-    // Buscar el proyecto para obtener su nombre
+  const handleDeleteClick = (projectId) => {
     const project = emprendimientos.find(emp => emp.id_emprendimiento === projectId);
     const projectName = project ? project.nombre : 'el proyecto';
+    
+    setConfirmModal({
+      isOpen: true,
+      projectId,
+      projectName,
+      isLoading: false
+    });
+  };
 
-    if (window.confirm(`¿Estás seguro de que deseas eliminar "${projectName}"?\n\nEsta acción no se puede deshacer.`)) {
-      try {
-        const result = await deleteEmprendimiento(projectId);
-        
-        // Mostrar mensaje de éxito con detalles
-        alert(result.message);
-        
-      } catch (err) {
-        console.error('Error al eliminar emprendimiento:', err);
-        
-        // Mostrar mensaje de error más específico
-        if (err.message.includes('solicitud de financiamiento')) {
-          alert(`❌ No se puede eliminar el proyecto\n\n${err.message}`);
-        } else {
-          alert('Error al eliminar el emprendimiento: ' + err.message);
-        }
+  const handleConfirmDelete = async () => {
+    if (!confirmModal.projectId) return;
+    
+    setConfirmModal(prev => ({ ...prev, isLoading: true }));
+    
+    try {
+      const result = await deleteEmprendimiento(confirmModal.projectId);
+      
+      setConfirmModal({
+        isOpen: false,
+        projectId: null,
+        projectName: '',
+        isLoading: false
+      });
+      
+      showNotification(
+        'success',
+        '¡Proyecto eliminado exitosamente!',
+        result.message
+      );
+      
+    } catch (err) {
+      setConfirmModal(prev => ({ ...prev, isLoading: false }));
+      console.error('Error al eliminar emprendimiento:', err);
+      
+
+      if (err.message.includes('solicitudes de financiamiento en proceso activo')) {
+        showNotification(
+          'warning',
+          'No se puede eliminar el proyecto',
+          err.message,
+          false
+        );
+      } else {
+        showNotification(
+          'error',
+          'Error al eliminar el proyecto',
+          `No se pudo eliminar el proyecto: ${err.message}`,
+          false
+        );
       }
     }
   };
+
+  const handleCancelDelete = () => {
+    setConfirmModal({
+      isOpen: false,
+      projectId: null,
+      projectName: '',
+      isLoading: false
+    });
+  };
+
   const totalEmployees = emprendimientos.reduce((sum, project) => sum + (project.cantidad_empleados || 0), 0);
   const totalClients = emprendimientos.reduce((sum, project) => sum + (project.cantidad_clientes || 0), 0);
   const totalMonthlyRevenue = emprendimientos.reduce((sum, project) => sum + (project.ingresos_mensuales || 0), 0);
 
-if (userLoading || isLoading) {
-  return (
-    <div className={styles.loadingContainer}>
-      <div className={styles.loading}>
-        <div className={styles.loadingSpinner}></div>
-        Cargando tus proyectos...
+  if (userLoading || isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loading}>
+          <div className={styles.loadingSpinner}></div>
+          Cargando tus proyectos...
+        </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   if (error) {
     return (
@@ -173,7 +256,6 @@ if (userLoading || isLoading) {
             <div className={styles.statValue}>{totalClients}</div>
             <span className={styles.statLabel}>clientes</span>
           </div>
-          
         </div>
 
         <div className={styles.projectsGrid}>
@@ -189,7 +271,7 @@ if (userLoading || isLoading) {
                 <div className={styles.projectActions}>
                   <button 
                     className={styles.deleteBtn}
-                    onClick={() => handleDeleteProject(project.id_emprendimiento)}
+                    onClick={() => handleDeleteClick(project.id_emprendimiento)}
                     title="Eliminar proyecto"
                   >
                     ×
@@ -256,7 +338,7 @@ if (userLoading || isLoading) {
                   className={styles.closeButton}
                   onClick={() => setShowNewProjectForm(false)}
                 >
-                  x
+                  ×
                 </button>
               </div>
 
@@ -377,6 +459,30 @@ if (userLoading || isLoading) {
           </div>
         )}
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        type="danger"
+        title="Eliminar Proyecto"
+        message={`¿Estás seguro de que deseas eliminar "${confirmModal.projectName}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isLoading={confirmModal.isLoading}
+      />
+
+      {/* Modal de notificaciones */}
+      <NotificacionModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        autoClose={true}
+        autoCloseTime={5000}
+      />
     </div>
   );
 }

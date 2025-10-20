@@ -29,7 +29,6 @@ export class Emprendimiento {
       
       return result[0];
     } catch (error) {
-      console.error('Error creating emprendimiento:', error);
       throw error;
     }
   }
@@ -44,7 +43,6 @@ export class Emprendimiento {
       
       return result;
     } catch (error) {
-      console.error('Error finding emprendimientos:', error);
       throw error;
     }
   }
@@ -58,7 +56,6 @@ export class Emprendimiento {
       
       return result[0];
     } catch (error) {
-      console.error('Error finding emprendimiento by id:', error);
       throw error;
     }
   }
@@ -80,108 +77,123 @@ export class Emprendimiento {
       
       return result[0];
     } catch (error) {
-      console.error('Error updating emprendimiento:', error);
       throw error;
     }
   }
-
-
-  static async checkActiveFundingRequests(id_emprendimiento) {
-    try {
-      const result = await sql`
-        SELECT 
-          id_solicitud,
-          estado,
-          monto_solicitado,
-          tipo_financiamiento,
-          fecha_solicitud
-        FROM solicitudes_financiamiento 
-        WHERE emprendimiento_id = ${id_emprendimiento}
-          AND estado IN ('aprobada', 'en_revision')
-        ORDER BY fecha_solicitud DESC
-      `;
-      
-      return result;
-    } catch (error) {
-      console.error('Error checking active funding requests:', error);
-      throw error;
-    }
-  }
-
-
-  static async checkPendingFundingRequests(id_emprendimiento) {
-    try {
-      const result = await sql`
-        SELECT 
-          id_solicitud,
-          estado,
-          monto_solicitado,
-          tipo_financiamiento,
-          fecha_solicitud
-        FROM solicitudes_financiamiento 
-        WHERE emprendimiento_id = ${id_emprendimiento}
-          AND estado = 'pendiente'
-        ORDER BY fecha_solicitud DESC
-      `;
-      
-      return result;
-    } catch (error) {
-      console.error('Error checking pending funding requests:', error);  
-      throw error;
-    }
-  }
-
-
 
   static async delete(id) {
     try {
-      // PASO 1: Verificar solicitudes activas (aprobadas o en revisión)
-      const activeFunding = await this.checkActiveFundingRequests(id);
       
-      if (activeFunding.length > 0) {
-        const activeRequest = activeFunding[0];
-        throw new Error(`No es posible eliminar el emprendimiento. Hay una solicitud de financiamiento ${activeRequest.estado === 'aprobada' ? 'APROBADA' : 'EN REVISIÓN'} por ${new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(activeRequest.monto_solicitado)}. Contacta al administrador para más información.`);
-      }
-
-      // PASO 2: Eliminar solicitudes pendientes si existen
-      const pendingRequests = await this.checkPendingFundingRequests(id);
+      const solicitudesQueBloquean = await sql`
+        SELECT 
+          id_solicitud,
+          estado,
+          monto_solicitado,
+          tipo_financiamiento,
+          fecha_solicitud
+        FROM solicitudes_financiamiento 
+        WHERE emprendimiento_id = ${id}
+          AND estado IN ('aprobada', 'en_revision', 'en_proceso')
+        ORDER BY fecha_solicitud DESC
+      `;
       
-      if (pendingRequests.length > 0) {
-        console.log(`Eliminando ${pendingRequests.length} solicitudes pendientes...`);
+      
+      if (solicitudesQueBloquean.length > 0) {
+        const solicitudActiva = solicitudesQueBloquean[0];
+        const estadoTexto = {
+          'aprobada': 'APROBADA',
+          'en_revision': 'EN REVISIÓN', 
+          'en_proceso': 'EN PROCESO'
+        }[solicitudActiva.estado] || solicitudActiva.estado.toUpperCase();
         
-        // Obtener rutas de archivos para eliminar de Supabase
-        const documentos = await sql`
-          SELECT df.ruta_supabase 
-          FROM documentos_financiamiento df
-          INNER JOIN solicitudes_financiamiento sf ON df.solicitud_id = sf.id_solicitud
-          WHERE sf.emprendimiento_id = ${id} AND sf.estado = 'pendiente'
+        const monto = new Intl.NumberFormat('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+          minimumFractionDigits: 0
+        }).format(solicitudActiva.monto_solicitado);
+        
+        throw new Error(`Este proyecto tiene solicitudes de financiamiento en proceso activo (${estadoTexto}), no es posible eliminarlo. Contacta al administrador para más información.`);
+      }
+      
+      const solicitudesEliminables = await sql`
+        SELECT 
+          id_solicitud,
+          estado,
+          monto_solicitado
+        FROM solicitudes_financiamiento 
+        WHERE emprendimiento_id = ${id}
+          AND estado IN ('pendiente', 'rechazada')
+        ORDER BY fecha_solicitud DESC
+      `;
+      
+      
+      if (solicitudesEliminables.length > 0) {
+        
+        await sql`
+          DELETE FROM documentos_financiamiento 
+          WHERE solicitud_id IN (
+            SELECT id_solicitud 
+            FROM solicitudes_financiamiento 
+            WHERE emprendimiento_id = ${id}
+              AND estado IN ('pendiente', 'rechazada')
+          )
         `;
-
-          // Eliminar solicitudes pendientes (documentos se eliminan por CASCADE)
+        
         await sql`
           DELETE FROM solicitudes_financiamiento 
-          WHERE emprendimiento_id = ${id} AND estado = 'pendiente'
+          WHERE emprendimiento_id = ${id}
+            AND estado IN ('pendiente', 'rechazada')
         `;
-
-        // Retornar archivos para eliminar de Supabase si es necesario
-        console.log(`Solicitudes pendientes eliminadas. Archivos a limpiar: ${documentos.length}`);
+        
       }
 
-      // PASO 3: Eliminar el emprendimiento
+      const verificacionFinal = await sql`
+        SELECT COUNT(*) as total 
+        FROM solicitudes_financiamiento 
+        WHERE emprendimiento_id = ${id}
+      `;
+      
+      if (parseInt(verificacionFinal[0].total) > 0) {
+        const solicitudesRestantes = await sql`
+          SELECT estado, COUNT(*) as cantidad 
+          FROM solicitudes_financiamiento 
+          WHERE emprendimiento_id = ${id}
+          GROUP BY estado
+        `;
+        
+        throw new Error('Este proyecto tiene solicitudes de financiamiento en proceso activo, no es posible eliminarlo.');
+      }
+
       const result = await sql`
         DELETE FROM emprendimientos 
         WHERE id_emprendimiento = ${id}
         RETURNING *
       `;
       
+      if (result.length === 0) {
+        throw new Error('No se encontró el emprendimiento para eliminar');
+      }
+            
       return {
         emprendimiento: result[0],
-        solicitudes_eliminadas: pendingRequests.length,
-        archivos_limpiar: pendingRequests.length > 0 ? true : false
+        solicitudes_eliminadas: solicitudesEliminables.length,
+        archivos_limpiar: solicitudesEliminables.length > 0
       };
+      
     } catch (error) {
-      console.error('Error deleting emprendimiento:', error);
-      throw error;
+      
+      if (error.message.includes('foreign key') || 
+          error.message.includes('constraint') ||
+          error.message.includes('violates')) {
+        throw new Error('Este proyecto tiene solicitudes de financiamiento en proceso activo, no es posible eliminarlo.');
+      }
+      
+      if (error.message.includes('proceso activo') || 
+          error.message.includes('ELIMINACIÓN BLOQUEADA')) {
+        throw error;
+      }
+      
+      throw new Error(`Error al eliminar el proyecto: ${error.message}`);
     }
   }
 }
