@@ -38,7 +38,7 @@
 }
 
 .logoHighlight {
-  color: var(--green-button);
+  color: var(--primary-blue);
 }
 
 .userType {
@@ -107,7 +107,6 @@
   color: #334155;
 }
 
-/* Modal de confirmación */
 .modalOverlay {
   position: fixed;
   top: 0;

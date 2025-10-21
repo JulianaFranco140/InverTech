@@ -4,7 +4,7 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import InvestorSidebar from '../../components/InvestorSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
 import MetricCard from '../../components/MetricCard';
-import NotificationsModal from '../../components/NotificationsModal'; // ✅ AGREGAR ESTA LÍNEA
+import NotificationsModal from '../../components/NotificationsModal'; 
 import styles from './page.module.css';
 import {useAuth} from '../../hooks/useAuth';
 
@@ -13,7 +13,7 @@ function DashboardPageContent() {
   const {user, isLoading:userLoading} = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const [showNotifications, setShowNotifications] = useState(false); // ✅ AGREGAR ESTA LÍNEA
+  const [showNotifications, setShowNotifications] = useState(false); 
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -124,8 +124,8 @@ function DashboardPageContent() {
           userType="investor"
           primaryButtonText="Actualizar"
           primaryButtonAction={() => window.location.reload()} 
-          notificationCount={1}
-          onNotificationClick={() => setShowNotifications(true)} // ✅ AGREGAR ESTA LÍNEA
+          notificationCount={10}
+          onNotificationClick={() => setShowNotifications(true)} 
         />
 
         <div className={styles.metricsGrid}>
