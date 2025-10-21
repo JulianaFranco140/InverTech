@@ -5,10 +5,14 @@ import InvestorSidebar from '../../components/InvestorSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
 import MetricCard from '../../components/MetricCard';
 import styles from './page.module.css';
+import {useAuth} from '../../hooks/useAuth';
 
 function DashboardPageContent() {
+
+  const {user, isLoading:userLoading} = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -75,16 +79,49 @@ function DashboardPageContent() {
     }
   ];
 
+
+    if (userLoading) {
+    return (
+      <div className={styles.dashboardContainer}>
+        <InvestorSidebar />
+        <div className={styles.mainContent}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Cargando dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (!user) {
+    return (
+      <div className={styles.dashboardContainer}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '100vh',
+          flexDirection: 'column'
+        }}>
+          <p>Redirigiendo al login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       <InvestorSidebar />
       
       <div className={styles.mainContent}>
         <DashboardHeader
-          title="Bienvenido, Demo Inversionista"
+          title={`¡Hola, ${user?.name || 'Inversionista'}!`}
           subtitle="Gestiona tu portafolio y descubre nuevas oportunidades de inversión"
           userType="investor"
           primaryButtonText="Actualizar"
+          primaryButtonAction={() => window.location.reload()} 
           notificationCount={1}
         />
 
