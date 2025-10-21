@@ -93,7 +93,7 @@
   right: 30px;
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #667eea 0%, #1A365D 100%);
+  background: linear-gradient(135deg, var(--green-button) 0%, var(--primary-blue) 100%);
   color: white;
   border: none;
   border-radius: 50%;
@@ -108,7 +108,7 @@
 }
 
 .scrollToTopBtn:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  background: linear-gradient(135deg, var(--green-button) 0%, var(--dark-blue) 100%);
   transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
 }
