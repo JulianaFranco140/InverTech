@@ -225,6 +225,7 @@ useEffect(() => {
           primaryButtonText="+ Solicitar Financiamiento"
           primaryButtonAction={handleRequestFunding}
           secondaryButtonText="Actualizar"
+          secondaryButtonAction={() => window.location.reload()} 
           notificationCount={stats.solicitudesPendientes}
         />
 
