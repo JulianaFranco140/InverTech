@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useEmprendimientos } from '../hooks/useEmprendimientos';
 import NotificacionModal from './NotificacionModal';
 import styles from './FundingModal.module.css';
 
-export default function FundingModal({ isOpen, onClose }) {
+export default function FundingModal({ isOpen, onClose, onSuccess }) {
   const { emprendimientos, isLoading } = useEmprendimientos();
   
-  const [formData, setFormData] = useState({
+  const [formState, setFormState] = useState({
     amount: '',
     revenue: '',
     type: '',
@@ -20,6 +20,7 @@ export default function FundingModal({ isOpen, onClose }) {
 
   const [dragActive, setDragActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -27,6 +28,10 @@ export default function FundingModal({ isOpen, onClose }) {
     title: '',
     message: ''
   });
+
+  useEffect(() => {
+
+  }, [emprendimientos]);
 
   const fundingTypes = [
     'Capital de Riesgo',
@@ -51,7 +56,7 @@ export default function FundingModal({ isOpen, onClose }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormState(prev => ({
       ...prev,
       [name]: value
     }));
@@ -118,7 +123,7 @@ export default function FundingModal({ isOpen, onClose }) {
     });
     
     if (validFiles.length > 0) {
-      setFormData(prev => ({
+      setFormState(prev => ({
         ...prev,
         documents: [...prev.documents, ...validFiles].slice(0, 5)
       }));
@@ -135,7 +140,7 @@ export default function FundingModal({ isOpen, onClose }) {
   };
 
   const removeFile = (index) => {
-    setFormData(prev => ({
+    setFormState(prev => ({
       ...prev,
       documents: prev.documents.filter((_, i) => i !== index)
     }));
@@ -144,63 +149,73 @@ export default function FundingModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
-      // Obtener token de localStorage
+
       const token = localStorage.getItem('auth-token');
+      
       
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      const formData = new FormData();
-      formData.append('emprendimiento_id', formData.emprendimiento_id);
-      formData.append('amount', formData.amount);
-      formData.append('revenue', formData.revenue);
-      formData.append('type', formData.type);
-      formData.append('purpose', formData.purpose);
-      formData.append('timeline', formData.timeline);
+      const formDataToSend = new FormData();
       
-      formData.documents.forEach(file => {
-        formData.append('documents', file);
+      formDataToSend.append('emprendimiento_id', formState.emprendimiento_id);
+      formDataToSend.append('amount', formState.amount);
+      formDataToSend.append('revenue', formState.revenue);
+      formDataToSend.append('type', formState.type);
+      formDataToSend.append('purpose', formState.purpose);
+      formDataToSend.append('timeline', formState.timeline);
+      
+
+      formState.documents.forEach((file, index) => {
+        formDataToSend.append('documents', file);
       });
+
 
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         },
-        body: formData
+        body: formDataToSend
       });
 
+
       const result = await response.json();
+      
 
       if (!response.ok) {
         throw new Error(result.error || 'Error al enviar la solicitud');
       }
 
-      const proyecto = emprendimientos.find(p => p.id_emprendimiento == formData.emprendimiento_id);
+      const proyecto = emprendimientos.find(p => p.id_emprendimiento == formState.emprendimiento_id);
       const nombreProyecto = proyecto ? proyecto.nombre : 'tu proyecto';
       
       const montoFormateado = new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
         minimumFractionDigits: 0
-      }).format(formData.amount);
+      }).format(formState.amount);
+      
       
       showNotification(
         'success',
-        '¡Solicitud enviada exitosamente! 🎉',
-        `Tu solicitud de financiamiento ${formData.type} por ${montoFormateado} para "${nombreProyecto}" ha sido registrada correctamente.`,
+        '¡Solicitud enviada exitosamente! ',
+        `Tu solicitud de financiamiento ${formState.type} por ${montoFormateado} para "${nombreProyecto}" ha sido registrada correctamente.`,
         false
       );
+      
+      onSuccess?.(result);
       
       setTimeout(() => {
         handleCancel();
       }, 4000);
       
     } catch (error) {
-      console.error('Error submitting funding request:', error);
+      setSubmitError(error.message);
       showNotification(
         'error',
         'Error al enviar la solicitud',
@@ -213,7 +228,7 @@ export default function FundingModal({ isOpen, onClose }) {
   };
 
   const handleCancel = () => {
-    setFormData({
+    setFormState({
       amount: '',
       revenue: '',
       type: '',
@@ -222,6 +237,7 @@ export default function FundingModal({ isOpen, onClose }) {
       timeline: '',
       documents: []
     });
+    setSubmitError(null);
     setNotification({ isOpen: false, type: 'info', title: '', message: '' });
     onClose();
   };
@@ -245,7 +261,7 @@ export default function FundingModal({ isOpen, onClose }) {
                   type="number"
                   id="amount"
                   name="amount"
-                  value={formData.amount}
+                  value={formState.amount}
                   onChange={handleInputChange}
                   placeholder="50000000"
                   min="1000000"
@@ -261,7 +277,7 @@ export default function FundingModal({ isOpen, onClose }) {
                   type="number"
                   id="revenue"
                   name="revenue"
-                  value={formData.revenue}
+                  value={formState.revenue} 
                   onChange={handleInputChange}
                   placeholder="25000000"
                   min="0"
@@ -276,7 +292,7 @@ export default function FundingModal({ isOpen, onClose }) {
                 <select
                   id="type"
                   name="type"
-                  value={formData.type}
+                  value={formState.type}
                   onChange={handleInputChange}
                   required
                   disabled={isSubmitting}
@@ -293,8 +309,11 @@ export default function FundingModal({ isOpen, onClose }) {
                 <select
                   id="emprendimiento_id"
                   name="emprendimiento_id"
-                  value={formData.emprendimiento_id}
-                  onChange={handleInputChange}
+                  value={formState.emprendimiento_id} 
+                  onChange={(e) => {
+
+                    handleInputChange(e);
+                  }}
                   required
                   disabled={isSubmitting}
                 >
@@ -328,7 +347,7 @@ export default function FundingModal({ isOpen, onClose }) {
               <textarea
                 id="purpose"
                 name="purpose"
-                value={formData.purpose}
+                value={formState.purpose}
                 onChange={handleInputChange}
                 placeholder="Describe para qué utilizarás el financiamiento..."
                 rows={3}
@@ -342,7 +361,7 @@ export default function FundingModal({ isOpen, onClose }) {
               <textarea
                 id="timeline"
                 name="timeline"
-                value={formData.timeline}
+                value={formState.timeline} 
                 onChange={handleInputChange}
                 placeholder="Detalla cómo y cuándo planeas usar los fondos..."
                 rows={4}
@@ -382,9 +401,9 @@ export default function FundingModal({ isOpen, onClose }) {
                 <p className={styles.fileTypes}>PDF, DOC, DOCX, JPG, PNG</p>
               </div>
               
-              {formData.documents.length > 0 && (
+              {formState.documents.length > 0 && (
                 <div className={styles.fileList}>
-                  {formData.documents.map((file, index) => (
+                  {formState.documents.map((file, index) => (
                     <div key={index} className={styles.fileItem}>
                       <div className={styles.fileInfo}>
                         <span className={styles.fileName}>{file.name}</span>
@@ -406,6 +425,12 @@ export default function FundingModal({ isOpen, onClose }) {
               )}
             </div>
 
+            {submitError && (
+              <div className={styles.errorMessage}>
+                {submitError}
+              </div>
+            )}
+
             <div className={styles.formActions}>
               <button 
                 type="button" 
@@ -419,11 +444,11 @@ export default function FundingModal({ isOpen, onClose }) {
                 type="submit"
                 className={styles.submitButton}
                 disabled={
-                  !formData.amount || 
-                  !formData.type || 
-                  !formData.emprendimiento_id || 
-                  !formData.purpose || 
-                  !formData.timeline ||
+                  !formState.amount || 
+                  !formState.type || 
+                  !formState.emprendimiento_id || 
+                  !formState.purpose || 
+                  !formState.timeline ||
                   isSubmitting ||
                   (!isLoading && emprendimientos.length === 0)
                 }
