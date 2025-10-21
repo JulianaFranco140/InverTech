@@ -1,11 +1,13 @@
 'use client';
 import { useState } from 'react';
+import ProtectedRoute from '../../components/ProtectedRoute'; // ✅ AGREGAR ESTA LÍNEA
 import InvestorSidebar from '../../components/InvestorSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
 import MetricCard from '../../components/MetricCard';
 import styles from './page.module.css';
 
-export default function DashboardPage() {
+// ✅ CAMBIAR ESTA FUNCIÓN DE export default A FUNCIÓN NORMAL
+function DashboardPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const formatCurrency = (amount) => {
@@ -152,5 +154,14 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ✅ AGREGAR ESTA NUEVA FUNCIÓN COMO EXPORT DEFAULT
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute requiredRole={2}>
+      <DashboardPageContent />
+    </ProtectedRoute>
   );
 }

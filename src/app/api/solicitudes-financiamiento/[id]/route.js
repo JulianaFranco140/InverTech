@@ -4,10 +4,12 @@ import { deleteFile } from '../../../../lib/supabase.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
-  const token = request.cookies.get('auth-token')?.value;
+  // Buscar token en Authorization header
+  const authHeader = request.headers.get('Authorization');
+  const token = authHeader ? authHeader.replace('Bearer ', '') : null;
   
   if (!token) {
-    throw new Error('Token no encontrado');
+    throw new Error('Token no encontrado en Authorization header');
   }
 
   try {
@@ -53,6 +55,8 @@ export async function GET(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    console.log(`🗑️ DELETE solicitud ${params.id}`);
+    
     const decoded = verifyToken(request);
     
     if (decoded.role !== 1) {
@@ -72,6 +76,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
+    // Eliminar archivos de Supabase
     for (const rutaArchivo of result.archivos_eliminar) {
       try {
         await deleteFile('documentos', rutaArchivo);
@@ -80,12 +85,15 @@ export async function DELETE(request, { params }) {
       }
     }
     
+    console.log(`✅ Solicitud ${id} eliminada exitosamente`);
+    
     return NextResponse.json({
       success: true,
       message: 'Solicitud eliminada exitosamente'
     });
 
   } catch (error) {
+    console.error('❌ Error eliminando solicitud:', error);
     return NextResponse.json(
       { error: error.message || 'Error interno del servidor' },
       { status: 500 }

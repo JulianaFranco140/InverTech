@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import InvestorSidebar from '../../components/InvestorSidebar';
+import ProtectedRoute from '../../components/ProtectedRoute';
 import styles from './page.module.css';
 
-export default function OpportunitiesPage() {
+function OpportunitiesPageContent() {
   const [selectedRisk, setSelectedRisk] = useState('Todos');
 
   const riskLevels = ['Todos', 'Bajo', 'Medio', 'Alto'];
@@ -261,5 +262,13 @@ export default function OpportunitiesPage() {
       </div>
       </div>
     </div>
+  );
+}
+
+export default function OpportunitiesPage() {
+  return (
+    <ProtectedRoute requiredRole={2}>
+      <OpportunitiesPageContent />
+    </ProtectedRoute>
   );
 }

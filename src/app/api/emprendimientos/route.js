@@ -3,10 +3,12 @@ import { Emprendimiento } from '../../../models/Emprendimiento.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
-  const token = request.cookies.get('auth-token')?.value;
+  // Buscar token en Authorization header
+  const authHeader = request.headers.get('Authorization');
+  const token = authHeader ? authHeader.replace('Bearer ', '') : null;
   
   if (!token) {
-    throw new Error('Token no encontrado');
+    throw new Error('Token no encontrado en Authorization header');
   }
 
   try {
@@ -55,37 +57,19 @@ export async function POST(request) {
 
     const body = await request.json();
     
-    const requiredFields = ['nombre', 'descripcion', 'categoria', 'ingresos_mensuales', 'fecha_creacion', 'cantidad_empleados', 'cantidad_clientes'];
-    const missingFields = requiredFields.filter(field => !body[field]);
-    
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { error: `Campos requeridos faltantes: ${missingFields.join(', ')}` },
-        { status: 400 }
-      );
-    }
-
     const emprendimientoData = {
-      nombre: body.nombre,
-      descripcion: body.descripcion,
-      categoria: body.categoria,
-      ingresos_mensuales: parseInt(body.ingresos_mensuales),
-      emprendedor_id: decoded.userId,
-      fecha_creacion: body.fecha_creacion,
-      cantidad_empleados: parseInt(body.cantidad_empleados),
-      cantidad_clientes: parseInt(body.cantidad_clientes)
+      ...body,
+      emprendedor_id: decoded.userId
     };
-
-    const nuevoEmprendimiento = await Emprendimiento.create(emprendimientoData);
+    
+    const result = await Emprendimiento.create(emprendimientoData);
     
     return NextResponse.json({
       success: true,
-      message: 'Emprendimiento creado exitosamente',
-      emprendimiento: nuevoEmprendimiento
+      emprendimiento: result
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating emprendimiento:', error);
     return NextResponse.json(
       { error: error.message || 'Error interno del servidor' },
       { status: 500 }

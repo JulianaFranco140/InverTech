@@ -143,56 +143,62 @@ export default function FundingModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (isSubmitting) return;
-    
     setIsSubmitting(true);
-    
-    try {
-      const submitFormData = new FormData();
-      
-      submitFormData.append('emprendimiento_id', formData.emprendimiento_id);
-      submitFormData.append('amount', formData.amount);
-      submitFormData.append('revenue', formData.revenue);
-      submitFormData.append('type', formData.type);
-      submitFormData.append('purpose', formData.purpose);
-      submitFormData.append('timeline', formData.timeline);
 
+    try {
+      // Obtener token de localStorage
+      const token = localStorage.getItem('auth-token');
+      
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const formData = new FormData();
+      formData.append('emprendimiento_id', formData.emprendimiento_id);
+      formData.append('amount', formData.amount);
+      formData.append('revenue', formData.revenue);
+      formData.append('type', formData.type);
+      formData.append('purpose', formData.purpose);
+      formData.append('timeline', formData.timeline);
+      
       formData.documents.forEach(file => {
-        submitFormData.append('documents', file);
+        formData.append('documents', file);
       });
 
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'POST',
-        body: submitFormData
+        headers: {
+          'Authorization': `Bearer ${token}` // ✅ AGREGAR AUTHORIZATION HEADER
+        },
+        body: formData
       });
 
       const result = await response.json();
 
-      if (response.ok) {
-        const proyecto = emprendimientos.find(p => p.id_emprendimiento == formData.emprendimiento_id);
-        const nombreProyecto = proyecto ? proyecto.nombre : 'tu proyecto';
-        
-        const montoFormateado = new Intl.NumberFormat('es-CO', {
-          style: 'currency',
-          currency: 'COP',
-          minimumFractionDigits: 0
-        }).format(formData.amount);
-        
-        showNotification(
-          'success',
-          '¡Solicitud enviada exitosamente! 🎉',
-          `Tu solicitud de financiamiento ${formData.type} por ${montoFormateado} para "${nombreProyecto}" ha sido registrada correctamente.`,
-          false
-        );
-        
-        setTimeout(() => {
-          handleCancel();
-        }, 4000);
-        
-      } else {
+      if (!response.ok) {
         throw new Error(result.error || 'Error al enviar la solicitud');
       }
+
+      const proyecto = emprendimientos.find(p => p.id_emprendimiento == formData.emprendimiento_id);
+      const nombreProyecto = proyecto ? proyecto.nombre : 'tu proyecto';
+      
+      const montoFormateado = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0
+      }).format(formData.amount);
+      
+      showNotification(
+        'success',
+        '¡Solicitud enviada exitosamente! 🎉',
+        `Tu solicitud de financiamiento ${formData.type} por ${montoFormateado} para "${nombreProyecto}" ha sido registrada correctamente.`,
+        false
+      );
+      
+      setTimeout(() => {
+        handleCancel();
+      }, 4000);
+      
     } catch (error) {
       console.error('Error submitting funding request:', error);
       showNotification(

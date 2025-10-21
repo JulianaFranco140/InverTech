@@ -2,16 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
+    // Con localStorage, el logout se maneja completamente en el cliente
+    // No necesitamos limpiar cookies del servidor
     const response = NextResponse.json({
       message: 'Logout exitoso'
-    });
-
-
-    response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 0
     });
 
     return response;

@@ -10,7 +10,7 @@ export async function POST(request) {
     const validation = validateRegisterData(body);
         
     if (!validation.isValid) {
-      console.log(' Errores de validación:', validation.errors);
+      console.log('❌ Errores de validación:', validation.errors);
       return NextResponse.json(
         { 
           error: 'Datos inválidos',
@@ -45,10 +45,14 @@ export async function POST(request) {
       newUser.rol_id === 1 ? 1 : 2
     );
 
+    console.log('✅ Usuario registrado exitosamente:', newUser.id_usuario);
+
+    // Devolver token en el response body (NO en cookies)
     const response = NextResponse.json(
       {
         success: true,
         message: 'Usuario registrado exitosamente',
+        token: token, // ✅ AGREGAR TOKEN AL RESPONSE
         user: {
           id: newUser.id_usuario,
           name: newUser.nombre,
@@ -60,17 +64,10 @@ export async function POST(request) {
       { status: 201 }
     );
 
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7
-    });
-
     return response;
 
   } catch (error) {
-    console.error(' Registration error:', error);
+    console.error('❌ Registration error:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor', details: error.message },
       { status: 500 }

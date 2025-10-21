@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import InvestorSidebar from '../../components/InvestorSidebar';
+import ProtectedRoute from '../../components/ProtectedRoute';
 import styles from './page.module.css';
 
-export default function Simulation() {
+function SimulationPageContent() {
   const [formData, setFormData] = useState({
     amount: '',
     term: '',
@@ -258,5 +259,13 @@ export default function Simulation() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SimulationPage() {
+  return (
+    <ProtectedRoute requiredRole={2}>
+      <SimulationPageContent />
+    </ProtectedRoute>
   );
 }

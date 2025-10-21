@@ -563,3 +563,290 @@
     font-size: 1.5rem;
   }
 }
+
+
+
+/* ===== ESTILOS PARA DATOS REALES ===== */
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #64748b;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.summarySubtext {
+  font-size: 12px;
+  color: #6b7280 !important;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.metricChange.neutral {
+  color: #6b7280;
+}
+
+.metricChange.positive {
+  color: #10b981;
+}
+
+.metricSubtext {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Estado vacío para proyectos */
+.emptyProjects {
+  text-align: center;
+  padding: 60px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+.emptyProjects h3 {
+  margin: 0 0 16px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.emptyProjects p {
+  margin: 0 0 32px 0;
+  font-size: 16px;
+  opacity: 0.9;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.createProjectBtn {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 16px 32px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.createProjectBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Categorías de proyectos */
+.categoryTag {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Métricas de proyectos individuales */
+.projectMetrics {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 16px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.projectMetric {
+  text-align: center;
+  flex: 1;
+}
+
+.projectMetric .metricValue {
+  display: block;
+  font-weight: 700;
+  font-size: 18px;
+  color: #1e293b;
+}
+
+.projectMetric .metricLabel {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.projectFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.projectAge {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.projectLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.projectLink:hover {
+  color: #2563eb;
+}
+
+/* Ver más proyectos */
+.viewMoreProjects {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.viewMoreBtn {
+  display: inline-block;
+  background: #f8fafc;
+  color: #475569;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.viewMoreBtn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+/* Sección de solicitudes de financiamiento */
+.requestsSection {
+  margin-top: 48px;
+}
+
+.requestsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.requestCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.requestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.requestHeader h4 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.requestStatus {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.requestStatus.pendiente {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.requestStatus.en_revision {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.requestStatus.aprobada {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.requestStatus.rechazada {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.requestContent p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.viewMoreRequests {
+  text-align: center;
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .projectMetrics {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .projectMetric {
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+  }
+  
+  .requestsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .emptyProjects {
+    padding: 40px 20px;
+  }
+  
+  .emptyProjects h3 {
+    font-size: 24px;
+  }
+}

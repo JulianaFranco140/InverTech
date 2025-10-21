@@ -1,24 +1,44 @@
-import { useState, useEffect } from 'react';
+'use client';
 
-export function useEmprendimientos(shouldFetch = true) {
+import { useState, useEffect } from 'react';
+import { getAuthToken } from './useAuth';
+
+export function useEmprendimientos() {
   const [emprendimientos, setEmprendimientos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Obtener emprendimientos
+  useEffect(() => {
+    fetchEmprendimientos();
+  }, []);
+
   const fetchEmprendimientos = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/emprendimientos');
+      setError(null);
+
+      const token = getAuthToken();
       
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch('/api/emprendimientos', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al obtener emprendimientos');
+        throw new Error(errorData.error || 'Error al cargar emprendimientos');
       }
 
       const data = await response.json();
       setEmprendimientos(data.emprendimientos || []);
-      setError(null);
+      
     } catch (err) {
       console.error('Error fetching emprendimientos:', err);
       setError(err.message);
@@ -28,15 +48,21 @@ export function useEmprendimientos(shouldFetch = true) {
     }
   };
 
-  // Crear nuevo emprendimiento
   const createEmprendimiento = async (emprendimientoData) => {
     try {
+      const token = getAuthToken();
+      
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
       const response = await fetch('/api/emprendimientos', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(emprendimientoData),
+        body: JSON.stringify(emprendimientoData)
       });
 
       if (!response.ok) {
@@ -47,61 +73,54 @@ export function useEmprendimientos(shouldFetch = true) {
       const data = await response.json();
       
       // Actualizar la lista local
-      setEmprendimientos(prev => [data.emprendimiento, ...prev]);
+      setEmprendimientos(prev => [...prev, data.emprendimiento]);
       
       return data.emprendimiento;
+      
     } catch (err) {
       console.error('Error creating emprendimiento:', err);
       throw err;
     }
   };
 
-  // Eliminar emprendimiento con mejor manejo de errores
   const deleteEmprendimiento = async (id) => {
     try {
+      const token = getAuthToken();
+      
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
       const response = await fetch(`/api/emprendimientos/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        // Manejar diferentes tipos de errores
-        if (data.type === 'ACTIVE_FUNDING_ERROR') {
-          throw new Error(data.error);
-        }
-        throw new Error(data.error || 'Error al eliminar emprendimiento');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar emprendimiento');
       }
 
       // Actualizar la lista local
       setEmprendimientos(prev => prev.filter(emp => emp.id_emprendimiento !== id));
       
-      return {
-        success: true,
-        message: data.message,
-        details: data.details
-      };
+      return true;
+      
     } catch (err) {
       console.error('Error deleting emprendimiento:', err);
       throw err;
     }
   };
 
-  // CAMBIO: Solo hacer fetch si shouldFetch es true
-  useEffect(() => {
-    if (shouldFetch) {
-      fetchEmprendimientos();
-    } else {
-      setIsLoading(false);
-    }
-  }, [shouldFetch]);
-
   return {
     emprendimientos,
     isLoading,
     error,
+    refetch: fetchEmprendimientos,
     createEmprendimiento,
-    deleteEmprendimiento,
-    refetch: fetchEmprendimientos
+    deleteEmprendimiento
   };
 }

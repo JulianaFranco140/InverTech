@@ -9,7 +9,6 @@ export async function POST(request) {
   try {
     const { email, password } = await request.json();
 
- 
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email y contraseña son requeridos' },
@@ -31,7 +30,8 @@ export async function POST(request) {
     }
 
     const user = users[0];
-    console.log(user);
+    console.log('👤 Usuario encontrado:', user);
+    
     const isPasswordValid = await bcryptjs.compare(password, user.contrasena);
     
     if (!isPasswordValid) {
@@ -41,7 +41,7 @@ export async function POST(request) {
       );
     }
 
- 
+    // Generar JWT token
     const token = jwt.sign(
       { 
         userId: user.id_usuario, 
@@ -53,28 +53,26 @@ export async function POST(request) {
       { expiresIn: '7d' }
     );
 
+    console.log('✅ Token generado para usuario:', user.id_usuario);
+
+    // Devolver token en el response body (NO en cookies)
     const response = NextResponse.json({
       message: 'Login exitoso',
+      token: token, // ✅ AGREGAR TOKEN AL RESPONSE
       user: {
         id: user.id_usuario,
         email: user.correo_electronico,
+        name: user.nombre,
         fullName: user.nombre,
-        role: user.rol_id === 1 ? 'emprendedor' : 'inversionista'
+        role: user.rol_id === 1 ? 'emprendedor' : 'inversionista',
+        rol_id: user.rol_id === 1 ? 1 : 2
       }
-    });
-
- 
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 // 7 días
     });
 
     return response;
 
   } catch (error) {
-    console.error('Error en login:', error);
+    console.error('❌ Error en login:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
