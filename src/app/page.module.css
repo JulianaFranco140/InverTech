@@ -160,7 +160,7 @@
   justify-content: center;
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
   border-radius: 50%;
   margin: 0 auto 32px;
   color: white;
@@ -228,8 +228,10 @@
 }
 
 .featureCard:hover .investorIcon {
-  background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #fff 0%, #3B82F6 100%);
   transform: scale(1.1);
+  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.6);
+  
 }
 
 .featureCard:hover .investorIcon svg {
@@ -237,8 +239,9 @@
 }
 
 .featureCard:hover .entrepreneurIcon {
-  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  background: linear-gradient(135deg, #fff 0%, #10B981 100%);
   transform: scale(1.1);
+  box-shadow: 0 5px 20px rgba(16, 185, 129, 0.6);
 }
 
 .featureCard:hover .entrepreneurIcon svg {
