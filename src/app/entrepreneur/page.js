@@ -111,17 +111,34 @@ useEffect(() => {
     }
 
     const totalProyectos = emprendimientos.length;
-    const totalEmpleados = emprendimientos.reduce((sum, emp) => sum + (emp.cantidad_empleados || 0), 0);
-    const totalClientes = emprendimientos.reduce((sum, emp) => sum + (emp.cantidad_clientes || 0), 0);
-    const totalIngresosMensuales = emprendimientos.reduce((sum, emp) => sum + (emp.ingresos_mensuales || 0), 0);
 
-    const totalFinanciamiento = solicitudes.reduce((sum, sol) => sum + (sol.monto_solicitado || 0), 0);
-    const totalFinanciamientoAprobado = solicitudes
-      .filter(sol => sol.estado === 'aprobada')
-      .reduce((sum, sol) => sum + (sol.monto_solicitado || 0), 0);
-    
-    const solicitudesPendientes = solicitudes.filter(sol => sol.estado === 'pendiente').length;
-    const solicitudesAprobadas = solicitudes.filter(sol => sol.estado === 'aprobada').length;
+    const totalEmpleados = emprendimientos.reduce((sum, emp) => sum + (emp.cantidad_empleados || 0), 0);
+
+    const totalClientes = emprendimientos.reduce((sum, emp) => sum + (emp.cantidad_clientes || 0), 0);
+
+
+
+
+
+    const totalIngresosMensuales = emprendimientos.reduce((sum, emp) => {
+      const ingresos = parseFloat(emp.ingresos_mensuales);
+      return sum + (isNaN(ingresos) ? 0 : ingresos);
+    }, 0);
+
+  const totalFinanciamiento = solicitudes.reduce((sum, sol) => {
+    const monto = parseFloat(sol.monto_solicitado);
+    return sum + (isNaN(monto) ? 0 : monto);
+  }, 0);
+  
+  const totalFinanciamientoAprobado = solicitudes
+    .filter(sol => sol.estado === 'aprobada')
+    .reduce((sum, sol) => {
+      const monto = parseFloat(sol.monto_solicitado);
+      return sum + (isNaN(monto) ? 0 : monto);
+    }, 0);
+  
+  const solicitudesPendientes = solicitudes.filter(sol => sol.estado === 'pendiente').length;
+  const solicitudesAprobadas = solicitudes.filter(sol => sol.estado === 'aprobada').length;
 
     const ingresosAnuales = totalIngresosMensuales * 12;
     const valoracionEstimada = (ingresosAnuales * 4) + totalFinanciamientoAprobado;
@@ -153,21 +170,8 @@ useEffect(() => {
     {
       label: 'Proyectos Activos',
       value: stats.totalProyectos.toString(),
-      change: stats.totalProyectos > 0 ? `${stats.totalProyectos} registrados` : 'Crea tu primer proyecto',
+      change: stats.totalProyectos > 0 ? `${stats.totalProyectos} proyectos registrados` : 'Crea tu primer proyecto',
       isPositive: stats.totalProyectos > 0
-    },
-    {
-      label: 'Revenue Mensual',
-      value: formatCurrencyShort(stats.totalIngresosMensuales),
-      change: stats.ingresosAnuales > 0 
-        ? `${formatCurrencyShort(stats.ingresosAnuales)} anual`
-        : 'Actualiza tus ingresos',
-      isPositive: stats.totalIngresosMensuales > 0
-    },
-    {
-      label: 'Valoración Estimada',
-      value: formatCurrencyShort(stats.valoracionEstimada),
-      subtext: 'Estimada por IA'
     }
   ];
 
@@ -308,11 +312,11 @@ useEffect(() => {
                         <div className={styles.projectTags}>
                           <span className={`${styles.statusTag} ${styles.active}`}>Activo</span>
                           <span className={styles.categoryTag}>
-                            {project.categoria === '1' ? 'Tecnología' :
-                             project.categoria === '2' ? 'Fintech' :
-                             project.categoria === '3' ? 'E-commerce' :
-                             project.categoria === '4' ? 'Sostenibilidad' :
-                             project.categoria === '5' ? 'Salud' :
+                            {project.categoria === 1 ? 'Tecnología' :
+                             project.categoria === 2 ? 'Fintech' :
+                             project.categoria === 3 ? 'E-commerce' :
+                             project.categoria === 4 ? 'Sostenibilidad' :
+                             project.categoria === 5 ? 'Salud' :
                              'Otro'}
                           </span>
                         </div>
