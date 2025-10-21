@@ -101,12 +101,9 @@ function MyRequestsPageContent() {
       const token = localStorage.getItem('auth-token');
       
       if (!token) {
-        console.log('❌ No token found for solicitudes');
         setSolicitudes([]);
         return;
       }
-
-      console.log('📡 Fetching solicitudes...');
 
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'GET',
@@ -118,16 +115,13 @@ function MyRequestsPageContent() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Solicitudes loaded:', data.solicitudes?.length || 0);
         setSolicitudes(data.solicitudes || []);
       } else {
         const errorText = await response.text();
-        console.error('❌ Error response:', errorText);
         setSolicitudes([]);
         showNotification('error', 'Error', 'No se pudieron cargar las solicitudes');
       }
     } catch (error) {
-      console.error('❌ Error fetching solicitudes:', error);
       setSolicitudes([]);
       showNotification('error', 'Error', 'Error de conexión al cargar las solicitudes');
     } finally {
