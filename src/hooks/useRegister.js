@@ -11,6 +11,8 @@ export function useRegister() {
     setError(null);
 
     try {
+
+      localStorage.removeItem('auth-token');
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -28,6 +30,17 @@ export function useRegister() {
         throw new Error(data.error || 'Error en el registro');
       }
 
+      if (data.token){
+        localStorage.setItem('auth-token', data.token);
+      }
+      else{
+        throw new Error('No se recibió token de autenticación');
+      }
+
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      
       if (data.user.rol_id === 1) {
         router.push('/entrepreneur');
       } else {
