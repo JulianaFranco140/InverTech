@@ -55,10 +55,9 @@ export async function POST(request) {
 
     console.log('✅ Token generado para usuario:', user.id_usuario);
 
-    // Devolver token en el response body (NO en cookies)
     const response = NextResponse.json({
       message: 'Login exitoso',
-      token: token, // ✅ AGREGAR TOKEN AL RESPONSE
+      token: token, 
       user: {
         id: user.id_usuario,
         email: user.correo_electronico,
@@ -72,7 +71,6 @@ export async function POST(request) {
     return response;
 
   } catch (error) {
-    console.error('❌ Error en login:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }

@@ -6,7 +6,6 @@ import DashboardHeader from '../../components/DashboardHeader';
 import MetricCard from '../../components/MetricCard';
 import styles from './page.module.css';
 
-// ✅ CAMBIAR ESTA FUNCIÓN DE export default A FUNCIÓN NORMAL
 function DashboardPageContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -157,7 +156,6 @@ function DashboardPageContent() {
   );
 }
 
-// ✅ AGREGAR ESTA NUEVA FUNCIÓN COMO EXPORT DEFAULT
 export default function DashboardPage() {
   return (
     <ProtectedRoute requiredRole={2}>

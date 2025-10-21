@@ -72,7 +72,6 @@ export function useEmprendimientos() {
 
       const data = await response.json();
       
-      // Actualizar la lista local
       setEmprendimientos(prev => [...prev, data.emprendimiento]);
       
       return data.emprendimiento;
@@ -104,7 +103,6 @@ export function useEmprendimientos() {
         throw new Error(errorData.error || 'Error al eliminar emprendimiento');
       }
 
-      // Actualizar la lista local
       setEmprendimientos(prev => prev.filter(emp => emp.id_emprendimiento !== id));
       
       return true;

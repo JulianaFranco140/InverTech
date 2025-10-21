@@ -116,7 +116,6 @@ export function useAuth() {
   };
 }
 
-// Helper function to get token for API calls
 export function getAuthToken() {
   return getLocalStorageToken();
 }

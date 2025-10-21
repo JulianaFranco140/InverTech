@@ -4,7 +4,6 @@ import { deleteFile } from '../../../../lib/supabase.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
-  // Buscar token en Authorization header
   const authHeader = request.headers.get('Authorization');
   const token = authHeader ? authHeader.replace('Bearer ', '') : null;
   
@@ -55,7 +54,6 @@ export async function GET(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    console.log(`🗑️ DELETE solicitud ${params.id}`);
     
     const decoded = verifyToken(request);
     
@@ -93,7 +91,6 @@ export async function DELETE(request, { params }) {
     });
 
   } catch (error) {
-    console.error('❌ Error eliminando solicitud:', error);
     return NextResponse.json(
       { error: error.message || 'Error interno del servidor' },
       { status: 500 }

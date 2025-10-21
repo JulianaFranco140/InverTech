@@ -104,7 +104,7 @@ export default function FundingModal({ isOpen, onClose }) {
         return false;
       }
       
-      if (file.size > 10 * 1024 * 1024) { // 10MB
+      if (file.size > 10 * 1024 * 1024) { 
         showNotification(
           'warning',
           'Archivo muy grande',
@@ -168,7 +168,7 @@ export default function FundingModal({ isOpen, onClose }) {
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}` // ✅ AGREGAR AUTHORIZATION HEADER
+          'Authorization': `Bearer ${token}`
         },
         body: formData
       });

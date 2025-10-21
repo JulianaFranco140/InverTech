@@ -3,7 +3,6 @@ import { Emprendimiento } from '../../../models/Emprendimiento.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
-  // Buscar token en Authorization header
   const authHeader = request.headers.get('Authorization');
   const token = authHeader ? authHeader.replace('Bearer ', '') : null;
   

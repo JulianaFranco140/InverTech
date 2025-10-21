@@ -4,7 +4,6 @@ import { deleteFile } from '../../../../lib/supabase.js';
 import jwt from 'jsonwebtoken';
 
 function verifyToken(request) {
-  // Buscar token en Authorization header
   const authHeader = request.headers.get('Authorization');
   const token = authHeader ? authHeader.replace('Bearer ', '') : null;
   
@@ -40,7 +39,6 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Eliminar archivos relacionados de Supabase
     for (const rutaArchivo of result.archivos_eliminar || []) {
       try {
         await deleteFile('documentos', rutaArchivo);

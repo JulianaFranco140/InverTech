@@ -9,24 +9,18 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('🛡️ ProtectedRoute - user:', user, 'isLoading:', isLoading, 'requiredRole:', requiredRole);
     
     if (!isLoading) {
       if (!user) {
-        console.log('❌ No user found, redirecting to login');
         router.push('/login');
         return;
       }
 
       if (requiredRole && user.role !== requiredRole) {
-        console.log(`❌ Invalid role. User role: ${user.role}, Required: ${requiredRole}`);
         
-        // Redirigir al dashboard correcto según el rol del usuario
         if (user.role === 1) {
-          console.log('➡️ Redirecting entrepreneur to /entrepreneur');
           router.push('/entrepreneur');
         } else if (user.role === 2) {
-          console.log('➡️ Redirecting investor to /dashboard');
           router.push('/dashboard');
         } else {
           console.log('➡️ Unknown role, redirecting to home');
@@ -35,7 +29,6 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
         return;
       }
 
-      console.log('✅ User authenticated and authorized, allowing access');
     }
   }, [user, isLoading, router, requiredRole]);
 
@@ -70,7 +63,7 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   }
 
   if (!user) {
-    return null; // Se está redirigiendo
+    return null;
   }
 
   if (requiredRole && user.role !== requiredRole) {

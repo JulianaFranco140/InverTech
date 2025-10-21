@@ -139,7 +139,6 @@ function OpportunitiesPageContent() {
       <InvestorSidebar />
       
       <div className={styles.mainContent}>
-        {/* Header */}
         <div className={styles.header}>
         <div className={styles.headerTop}>
           <div className={styles.titleSection}>
@@ -163,7 +162,6 @@ function OpportunitiesPageContent() {
           </div>
         </div>
 
-        {/* Filters */}
         <div className={styles.filtersSection}>
           <div className={styles.filters}>
             <select
@@ -180,7 +178,6 @@ function OpportunitiesPageContent() {
         </div>
       </div>
 
-      {/* Results */}
       <div className={styles.resultsSection}>
         <div className={styles.resultsHeader}>
           <span className={styles.resultsCount}>
