@@ -142,7 +142,6 @@ useEffect(() => {
 
   const stats = calcularEstadisticas();
 
-  // ===== DATOS DE MÉTRICAS DINÁMICAS =====
   const metricsData = [
     {
       label: 'Financiamiento Total',
@@ -360,7 +359,7 @@ useEffect(() => {
 
           {solicitudes.length > 0 && (
             <div className={styles.requestsSection}>
-              <h2>Solicitudes de Financiamiento Recientes</h2>
+              <h2 className={styles.requestsTitle}>Solicitudes de Financiamiento Recientes</h2>
               <div className={styles.requestsGrid}>
                 {solicitudes.slice(0, 3).map((solicitud) => (
                   <div key={solicitud.id_solicitud} className={styles.requestCard}>

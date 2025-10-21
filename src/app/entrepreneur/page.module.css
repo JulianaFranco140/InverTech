@@ -744,9 +744,12 @@
   color: #334155;
 }
 
-/* Sección de solicitudes de financiamiento */
 .requestsSection {
   margin-top: 48px;
+}
+
+.requestsTitle{
+  color: #1e293b;
 }
 
 .requestsGrid {
