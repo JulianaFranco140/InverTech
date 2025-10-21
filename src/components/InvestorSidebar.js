@@ -34,7 +34,7 @@ export default function InvestorSidebar() {
       <div className={styles.logoSection}>
         <div className={styles.logo}>
           <Link href="/dashboard">
-            <span className={styles.logoText}>InverTech</span>
+            <span className={styles.logoText}>Inver<span className={styles.logoHighlight}>Tech</span></span>
           </Link>
         </div>
         <p className={styles.userType}>Panel de Inversionista</p>
@@ -57,7 +57,6 @@ export default function InvestorSidebar() {
         <span className={styles.navText}>Cerrar Sesión</span>
       </button>
 
-      {/* Modal de confirmación */}
       {showLogoutConfirm && (
         <div className={styles.modalOverlay}>
           <div className={styles.confirmModal}>

@@ -35,7 +35,7 @@ const confirmLogout = async () => {
       <div className={styles.logoSection}>
         <div className={styles.logo}>
           <Link href="/entrepreneur">
-            <span className={styles.logoText}>InverTech</span>
+            <span className={styles.logoText}>Inver<span className={styles.logoHighlight}>Tech</span></span>
           </Link>
         </div>
         <p className={styles.userType}>Panel de Emprendedor</p>

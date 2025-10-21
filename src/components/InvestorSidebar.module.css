@@ -37,6 +37,10 @@
   font-weight: 700;
 }
 
+.logoHighlight {
+  color: var(--green-button);
+}
+
 .userType {
   color: #64748b;
   font-size: 14px;
