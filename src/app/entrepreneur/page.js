@@ -291,7 +291,6 @@ useEffect(() => {
             
             {emprendimientos.length === 0 ? (
               <div className={styles.emptyProjects}>
-                <div className={styles.emptyIcon}>🚀</div>
                 <h3>¡Comienza tu viaje emprendedor!</h3>
                 <p>No tienes proyectos registrados aún. Crea tu primer emprendimiento para comenzar.</p>
                 <a href="/entrepreneur/project" className={styles.createProjectBtn}>
