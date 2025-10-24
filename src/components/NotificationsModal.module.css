@@ -254,3 +254,21 @@
   color: #ea580c;
 }
 
+
+.cronograma {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.cronograma strong {
+  color: #333;
+  font-size: 13px;
+}
+
+.cronograma p {
+  margin: 4px 0 0 0;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.4;
+}

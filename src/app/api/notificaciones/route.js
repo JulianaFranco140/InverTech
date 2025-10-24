@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request) {
   try {
+    console.log('🔍 GET /api/notificaciones - Iniciando...');
     
+    console.log('✅ Generando solicitudes genéricas...');
 
+    // Datos genéricos de solicitudes con riesgo calculado
     const solicitudesGenericas = [
       {
         id: 1,
@@ -13,7 +16,7 @@ export async function GET(request) {
         emprendedor: 'María González',
         monto: 500000000,
         roi: '18%',
-        riesgo: 'Medio', 
+        riesgo: 'Medio',
         riesgoColor: 'blue',
         fecha: '2024-10-15T10:30:00Z',
         proposito: 'Expansión a 5 nuevas ciudades y desarrollo de nueva línea de productos sostenibles'
@@ -26,7 +29,7 @@ export async function GET(request) {
         emprendedor: 'Carlos Rodríguez',
         monto: 800000000,
         roi: '25%',
-        riesgo: 'Alto', 
+        riesgo: 'Alto',
         riesgoColor: 'orange',
         fecha: '2024-10-12T14:15:00Z',
         proposito: 'Desarrollo de nuevos algoritmos de AI y contratación de equipo técnico especializado'
@@ -104,7 +107,7 @@ export async function GET(request) {
         emprendedor: 'Miguel Torres',
         monto: 400000000,
         roi: '16%',
-        riesgo: 'Medio', 
+        riesgo: 'Medio',
         riesgoColor: 'blue',
         fecha: '2024-09-28T17:45:00Z',
         proposito: 'Apertura de 10 nuevas cocinas virtuales y desarrollo de app móvil avanzada'
@@ -137,6 +140,7 @@ export async function GET(request) {
       }
     ];
 
+    console.log('✅ Solicitudes genéricas generadas:', solicitudesGenericas.length);
 
     return NextResponse.json({
       success: true,
@@ -145,6 +149,7 @@ export async function GET(request) {
     });
 
   } catch (error) {
+    console.error('❌ Error en /api/notificaciones:', error);
     
     return NextResponse.json(
       { error: 'Error interno del servidor' },

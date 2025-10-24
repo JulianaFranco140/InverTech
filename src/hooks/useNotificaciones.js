@@ -10,31 +10,31 @@ export function useNotificaciones() {
       setIsLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('auth-token');
-      
-      if (!token) {
-        setNotificaciones([]);
-        return;
-      }
+      console.log('📡 Fetching notificaciones sin token...');
 
       const response = await fetch('/api/notificaciones', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
+      console.log('📡 Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Data received:', data);
         setNotificaciones(data.solicitudes || []);
       } else {
+        const errorText = await response.text();
+        console.error('❌ Error response:', response.status, errorText);
         setNotificaciones([]);
-        setError('Error al cargar solicitudes');
+        setError(`Error ${response.status}: ${errorText}`);
       }
     } catch (error) {
+      console.error('❌ Fetch error:', error);
       setNotificaciones([]);
-      setError('Error de conexión');
+      setError(`Error de conexión: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
