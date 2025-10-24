@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { setToken, removeToken } from '../lib/tokenUtils';
 
 export function useRegister() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +13,7 @@ export function useRegister() {
 
     try {
 
-      localStorage.removeItem('auth-token');
+      removeToken();
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -31,7 +32,7 @@ export function useRegister() {
       }
 
       if (data.token){
-        localStorage.setItem('auth-token', data.token);
+        setToken(data.token);
       }
       else{
         throw new Error('No se recibió token de autenticación');

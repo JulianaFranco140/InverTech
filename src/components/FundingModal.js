@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useEmprendimientos } from '../hooks/useEmprendimientos';
 import NotificacionModal from './NotificacionModal';
 import styles from './FundingModal.module.css';
+import { getToken, createAuthHeaders } from '../lib/tokenUtils';
 
 export default function FundingModal({ isOpen, onClose, onSuccess }) {
   const { emprendimientos, isLoading } = useEmprendimientos();
@@ -153,7 +154,7 @@ export default function FundingModal({ isOpen, onClose, onSuccess }) {
 
     try {
 
-      const token = localStorage.getItem('auth-token');
+      const token = getToken();
       
       
       if (!token) {
@@ -178,7 +179,7 @@ export default function FundingModal({ isOpen, onClose, onSuccess }) {
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}` // No usar createAuthHeaders aquí porque es FormData
         },
         body: formDataToSend
       });

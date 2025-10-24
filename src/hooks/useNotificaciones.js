@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createAuthHeaders, handleTokenError } from '../lib/tokenUtils';
 
 export function useNotificaciones() {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -10,13 +11,11 @@ export function useNotificaciones() {
       setIsLoading(true);
       setError(null);
       
-      console.log('📡 Fetching notificaciones sin token...');
+      console.log('📡 Fetching notificaciones...');
 
       const response = await fetch('/api/notificaciones', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       console.log('📡 Response status:', response.status);
@@ -26,6 +25,9 @@ export function useNotificaciones() {
         console.log('✅ Data received:', data);
         setNotificaciones(data.solicitudes || []);
       } else {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorText = await response.text();
         console.error('❌ Error response:', response.status, errorText);
         setNotificaciones([]);

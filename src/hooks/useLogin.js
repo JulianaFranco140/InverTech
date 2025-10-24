@@ -1,15 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-function setLocalStorageToken(token) {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('auth-token', token);
-    } catch (error) {
-      console.error('Error setting localStorage:', error);
-    }
-  }
-}
+import { setToken } from '../lib/tokenUtils';
 
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +28,7 @@ export function useLogin() {
       }
 
       if (data.token) {
-        setLocalStorageToken(data.token);
+        setToken(data.token);
       } else {
       }
 

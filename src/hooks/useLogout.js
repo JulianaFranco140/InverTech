@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createAuthHeaders, removeToken } from '../lib/tokenUtils';
 
 export function useLogout() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,12 +14,14 @@ export function useLogout() {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: createAuthHeaders(),
       });
+      removeToken(); // Limpiar token después del logout
       router.push('/');
     } catch (err) {
+      console.error('Error during logout:', err);
+      removeToken(); // Limpiar token aunque haya error
+      router.push('/');
     } finally {
       setIsLoading(false);
     }

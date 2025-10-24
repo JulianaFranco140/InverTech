@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAuthToken } from './useAuth';
+import { createAuthHeaders, getToken, handleTokenError } from '../lib/tokenUtils';
 
 export function useEmprendimientos() {
   const [emprendimientos, setEmprendimientos] = useState([]);
@@ -17,7 +17,7 @@ export function useEmprendimientos() {
       setIsLoading(true);
       setError(null);
 
-      const token = getAuthToken();
+      const token = getToken();
       
       if (!token) {
         throw new Error('No hay token de autenticación');
@@ -25,13 +25,13 @@ export function useEmprendimientos() {
 
       const response = await fetch('/api/emprendimientos', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al cargar emprendimientos');
       }
@@ -50,7 +50,7 @@ export function useEmprendimientos() {
 
   const createEmprendimiento = async (emprendimientoData) => {
     try {
-      const token = getAuthToken();
+      const token = getToken();
       
       if (!token) {
         throw new Error('No hay token de autenticación');
@@ -58,14 +58,14 @@ export function useEmprendimientos() {
 
       const response = await fetch('/api/emprendimientos', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: createAuthHeaders(),
         body: JSON.stringify(emprendimientoData)
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al crear emprendimiento');
       }
@@ -84,7 +84,7 @@ export function useEmprendimientos() {
 
   const deleteEmprendimiento = async (id) => {
     try {
-      const token = getAuthToken();
+      const token = getToken();
       
       if (!token) {
         throw new Error('No hay token de autenticación');
@@ -92,13 +92,13 @@ export function useEmprendimientos() {
 
       const response = await fetch(`/api/emprendimientos/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al eliminar emprendimiento');
       }

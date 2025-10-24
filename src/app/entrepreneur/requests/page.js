@@ -7,6 +7,7 @@ import DashboardHeader from '../../../components/DashboardHeader';
 import NotificacionModal from '../../../components/NotificacionModal';
 import ConfirmModal from '../../../components/ConfirmModal';
 import { useAuth } from '../../../hooks/useAuth';
+import { getToken, createAuthHeaders, handleTokenError } from '../../../lib/tokenUtils';
 import styles from './page.module.css';
 
 function MyRequestsPageContent() {
@@ -98,7 +99,7 @@ function MyRequestsPageContent() {
     try {
       setIsLoading(true);
       
-      const token = localStorage.getItem('auth-token');
+      const token = getToken();
       
       if (!token) {
         setSolicitudes([]);
@@ -107,16 +108,16 @@ function MyRequestsPageContent() {
 
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (response.ok) {
         const data = await response.json();
         setSolicitudes(data.solicitudes || []);
       } else {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorText = await response.text();
         setSolicitudes([]);
         showNotification('error', 'Error', 'No se pudieron cargar las solicitudes');
@@ -131,14 +132,11 @@ function MyRequestsPageContent() {
 
   const handleViewDetails = async (solicitudId) => {
     try {
-      const token = localStorage.getItem('auth-token');
+      const token = getToken();
       
       const response = await fetch(`/api/solicitudes-financiamiento/${solicitudId}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (response.ok) {
@@ -146,6 +144,9 @@ function MyRequestsPageContent() {
         setSelectedSolicitud(data.solicitud);
         setShowDetails(true);
       } else {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         showNotification('error', 'Error', 'No se pudieron cargar los detalles de la solicitud');
       }
     } catch (error) {
@@ -169,14 +170,11 @@ function MyRequestsPageContent() {
     setConfirmModal(prev => ({ ...prev, isLoading: true }));
     
     try {
-      const token = localStorage.getItem('auth-token');
+      const token = getToken();
       
       const response = await fetch(`/api/solicitudes-financiamiento/${confirmModal.solicitudId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (response.ok) {
@@ -195,6 +193,9 @@ function MyRequestsPageContent() {
         
         fetchSolicitudes();
       } else {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al eliminar la solicitud');
       }

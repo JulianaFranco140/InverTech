@@ -7,6 +7,7 @@ import DashboardHeader from '../../components/DashboardHeader';
 import FundingModal from '../../components/FundingModal';
 import { useEmprendimientos } from '../../hooks/useEmprendimientos';
 import { useAuth } from '../../hooks/useAuth';
+import { getToken, createAuthHeaders, handleTokenError } from '../../lib/tokenUtils';
 import styles from './page.module.css';
 
 function EntrepreneurDashboardContent() {
@@ -27,7 +28,7 @@ useEffect(() => {
     try {
       setIsLoadingSolicitudes(true);
       
-      const token = localStorage.getItem('auth-token');
+      const token = getToken();
       
       if (!token) {
         setSolicitudes([]);
@@ -36,16 +37,16 @@ useEffect(() => {
 
       const response = await fetch('/api/solicitudes-financiamiento', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders()
       });
 
       if (response.ok) {
         const data = await response.json();
         setSolicitudes(data.solicitudes || []);
       } else {
+        if (response.status === 401) {
+          return handleTokenError();
+        }
         const errorData = await response.text();
         console.error('Error response:', errorData);
         setSolicitudes([]);
