@@ -64,15 +64,14 @@ export async function GET(request) {
 
       const categoriaMap = {
         1: 'Tecnología',
-        2: 'Salud',
-        3: 'Fintech',
-        4: 'E-commerce',
-        5: 'Sostenibilidad',
+        2: 'Fintech',
+        3: 'E-commerce',
+        4: 'Sostenibilidad',
+        5: 'Salud',
         6: 'Educación',
         7: 'Agricultura',
-        8: 'Logística',
-        9: 'Energía',
-        10: 'Alimentación'
+        8: 'Alimentación',
+        9: 'Servicios',
       };
 
       const categoriaNombre = categoriaMap[oportunidad.emprendimiento_categoria] || 'General';
