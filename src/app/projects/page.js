@@ -22,6 +22,8 @@ function ProjectsPageContent() {
     project: null
   });
 
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -29,6 +31,13 @@ function ProjectsPageContent() {
   useEffect(() => {
     filterProjects(filters);
   }, [filters, projects]);
+
+  const toggleDescription = (projectId) => {
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [projectId]: !prev[projectId]
+    }));
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -43,12 +52,11 @@ function ProjectsPageContent() {
     if (amount >= 1000000000) {
       return `$${(amount / 1000000000).toFixed(1)}B`;
     } else if (amount >= 1000000) {
-      return `$${(amount / 1000000).toFixed(0)}M`;
+      return `$${(amount / 1000000).toFixed(1)}M`;
     } else if (amount >= 1000) {
-      return `$${(amount / 1000).toFixed(0)}K`;
-    } else {
-      return `$${amount}`;
+      return `$${(amount / 1000).toFixed(1)}K`;
     }
+    return formatCurrency(amount);
   };
 
   const handleFilterChange = (key, value) => {
@@ -65,14 +73,19 @@ function ProjectsPageContent() {
     });
   };
 
-  const handleCloseContactModal = () => {
+  const handleContactClose = () => {
     setContactModal({
       isOpen: false,
       project: null
     });
   };
 
-  const totalRevenue = filteredProjects.reduce((sum, project) => sum + project.monthlyRevenue, 0);
+  const handleContactSuccess = () => {
+    setContactModal({
+      isOpen: false,
+      project: null
+    });
+  };
 
   if (userLoading) {
     return (
@@ -145,15 +158,15 @@ function ProjectsPageContent() {
                 type="number"
                 placeholder="Ingresos mín/mes"
                 value={filters.minRevenue}
-                onChange={(e) => handleFilterChange('minRevenue', parseInt(e.target.value) || '')}
+                onChange={(e) => handleFilterChange('minRevenue', e.target.value)}
                 className={styles.filterInput}
               />
               
               <input
                 type="number"
-                placeholder="Empleados mín"
+                placeholder="Empleados mínimos"
                 value={filters.minEmployees}
-                onChange={(e) => handleFilterChange('minEmployees', parseInt(e.target.value) || '')}
+                onChange={(e) => handleFilterChange('minEmployees', e.target.value)}
                 className={styles.filterInput}
               />
             </div>
@@ -195,12 +208,38 @@ function ProjectsPageContent() {
                     </div>
                     <div className={styles.cardInfo}>
                       <h3 className={styles.projectTitle}>{project.name}</h3>
-                      <p className={styles.projectDescription}>
-                        {project.description.length > 100 
-                          ? `${project.description.substring(0, 100)}...` 
-                          : project.description
-                        }
-                      </p>
+                      
+                      <div className={styles.projectDescription}>
+                        {expandedDescriptions[project.id] ? (
+                          <>
+                            <p>{project.description}</p>
+                            <button 
+                              className={styles.toggleDescription}
+                              onClick={() => toggleDescription(project.id)}
+                            >
+                              Ver menos
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <p>
+                              {project.description.length > 100 
+                                ? `${project.description.substring(0, 100)}...` 
+                                : project.description
+                              }
+                            </p>
+                            {project.description.length > 100 && (
+                              <button 
+                                className={styles.toggleDescription}
+                                onClick={() => toggleDescription(project.id)}
+                              >
+                                Ver más...
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      
                       <div className={styles.projectMeta}>
                         <span className={styles.category}>{project.category}</span>
                         <span className={styles.timeInMarket}>
@@ -226,21 +265,16 @@ function ProjectsPageContent() {
                       <span className={styles.statValue}>{project.clients}</span>
                     </div>
                   </div>
-
-                  <div className={styles.entrepreneurInfo}>
-                    <div className={styles.entrepreneurAvatar}>
-                      {project.entrepreneur.name?.charAt(0) || 'E'}
-                    </div>
-                    <div className={styles.entrepreneurDetails}>
+                  
+                  <div className={styles.cardFooter}>
+                    <div className={styles.entrepreneurInfo}>
                       <span className={styles.entrepreneurName}>
                         {project.entrepreneur.name}
                       </span>
-                      <span className={styles.entrepreneurTitle}>Emprendedor</span>
+                      <span className={styles.foundedYear}>
+                        Fundado en {project.founded}
+                      </span>
                     </div>
-                  </div>
-
-                  <div className={styles.cardFooter}>
-
                     <button 
                       className={styles.contactBtn}
                       onClick={() => handleContactClick(project)}
@@ -257,8 +291,9 @@ function ProjectsPageContent() {
 
       <ContactEntrepreneurModal
         isOpen={contactModal.isOpen}
-        onClose={handleCloseContactModal}
         project={contactModal.project}
+        onClose={handleContactClose}
+        onSuccess={handleContactSuccess}
       />
     </div>
   );
