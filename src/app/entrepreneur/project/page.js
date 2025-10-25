@@ -460,7 +460,6 @@ export default function MyProjectPage() {
         )}
       </div>
 
-      {/* Modal de confirmación de eliminación */}
       <ConfirmModal
         isOpen={confirmModal.isOpen}
         type="danger"
@@ -473,7 +472,6 @@ export default function MyProjectPage() {
         isLoading={confirmModal.isLoading}
       />
 
-      {/* Modal de notificaciones */}
       <NotificacionModal
         isOpen={notification.isOpen}
         type={notification.type}
