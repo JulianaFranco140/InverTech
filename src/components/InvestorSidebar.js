@@ -15,6 +15,7 @@ export default function InvestorSidebar() {
     { name: 'Oportunidades', icon: '', href: '/opportunities' },
     { name: 'Simulador', icon: '', href: '/simulation' },
     //{ name: 'Mi Portfolio', icon: '', href: '/portfolio' },
+    { name: 'Explorador de proyectos', icon: '', href: '/projects' }
     ];
 
   const handleLogoutClick = () => {
