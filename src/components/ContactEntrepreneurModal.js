@@ -9,10 +9,28 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
     subject: '',
     message: '',
     investmentAmount: '',
-    contactPreference: 'email'
+    specializations: []
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const specializationOptions = [
+    { value: 'tecnologia', label: 'Tecnología' },
+    { value: 'fintech', label: 'Fintech' },
+    { value: 'ecommerce', label: 'E-commerce' },
+    { value: 'sostenibilidad', label: 'Sostenibilidad' },
+    { value: 'salud', label: 'Salud' },
+    { value: 'educacion', label: 'Educación' },
+    { value: 'agricultura', label: 'Agricultura' },
+    { value: 'alimentacion', label: 'Alimentación' },
+    { value: 'servicios', label: 'Servicios' },
+    { value: 'biotecnologia', label: 'Biotecnología' },
+    { value: 'energia', label: 'Energía' },
+    { value: 'logistica', label: 'Logística' },
+    { value: 'inmobiliario', label: 'Inmobiliario' },
+    { value: 'turismo', label: 'Turismo' },
+    { value: 'medios', label: 'Medios y Comunicación' }
+  ];
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -31,11 +49,31 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
     }));
   };
 
+  const handleSpecializationChange = (specializationValue) => {
+    setFormData(prev => {
+      const currentSpecializations = prev.specializations;
+      const isSelected = currentSpecializations.includes(specializationValue);
+      
+      if (isSelected) {
+        return {
+          ...prev,
+          specializations: currentSpecializations.filter(spec => spec !== specializationValue)
+        };
+      } else {
+        return {
+          ...prev,
+          specializations: [...currentSpecializations, specializationValue]
+        };
+      }
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      console.log('Enviando mensaje con especializaciones:', formData.specializations);
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setShowSuccess(true);
@@ -54,7 +92,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
       subject: '',
       message: '',
       investmentAmount: '',
-      contactPreference: 'email'
+      specializations: [] 
     });
     setShowSuccess(false);
     setIsSubmitting(false);
@@ -71,7 +109,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
             <div className={styles.successIcon}>✓</div>
             <h3>¡Mensaje enviado exitosamente!</h3>
             <p>Tu solicitud de contacto ha sido enviada a {project.entrepreneur.name}.</p>
-            <p>Te contactarán pronto a través de tu método preferido.</p>
+            <p>Te contactarán pronto con la información sobre tus especializaciones.</p>
           </div>
         ) : (
           <>
@@ -126,18 +164,31 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="contactPreference">Método de Contacto Preferido</label>
-                <select
-                  id="contactPreference"
-                  name="contactPreference"
-                  value={formData.contactPreference}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="email">Email</option>
-                  <option value="phone">Teléfono</option>
-                  <option value="both">Email y Teléfono</option>
-                </select>
+                <label>Áreas de Especialización</label>
+                <p className={styles.fieldDescription}>
+                  Selecciona una o varias áreas en las que tienes experiencia como inversionista
+                </p>
+                <div className={styles.specializationsGrid}>
+                  {specializationOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`${styles.specializationChip} ${
+                        formData.specializations.includes(option.value) ? styles.selected : ''
+                      }`}
+                      onClick={() => handleSpecializationChange(option.value)}
+                    >
+                      <span className={styles.chipIcon}>
+                        {formData.specializations.includes(option.value) ? '✓' : '+'}
+                      </span>
+                      {option.label}
+                    </div>
+                  ))}
+                </div>
+                {formData.specializations.length > 0 && (
+                  <div className={styles.selectedCount}>
+                    {formData.specializations.length} especialización{formData.specializations.length > 1 ? 'es' : ''} seleccionada{formData.specializations.length > 1 ? 's' : ''}
+                  </div>
+                )}
               </div>
 
               <div className={styles.formGroup}>
