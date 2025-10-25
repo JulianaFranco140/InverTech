@@ -1,78 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useInvestorRequests } from '../../../hooks/useInvestorRequests';
 import EntrepreneurSidebar from '../../../components/EntrepreneurSidebar';
 import DashboardHeader from '../../../components/DashboardHeader';
 import styles from './page.module.css';
 
 export default function InvestorsPage() {
-  const [investors] = useState([
-    {
-      id: 1,
-      name: 'María González',
-      type: 'Angel Investor',
-      company: 'TechVentures Colombia',
-      investment: 150000,
-      interest: 'high',
-      status: 'pending',
-      specialization: ['Tecnología', 'Fintech'],
-      avatar: 'MG',
-      description: 'Inversionista especializada en startups de tecnología financiera con más de 10 años de experiencia.',
-      email: 'maria.gonzalez@techventures.co'
-    },
-    {
-      id: 2,
-      name: 'Carlos Rodriguez',
-      type: 'Venture Capital',
-      company: 'Innovation Capital',
-      investment: 300000,
-      interest: 'very_high',
-      status: 'negotiating',
-      specialization: ['SaaS', 'B2B'],
-      avatar: 'CR',
-      description: 'Partner en Innovation Capital, fondo especializado en soluciones B2B y software empresarial.',
-      email: 'carlos.rodriguez@innovationcapital.com'
-    },
-    {
-      id: 3,
-      name: 'Ana Morales',
-      type: 'Corporate Investor',
-      company: 'Banco Popular',
-      investment: 500000,
-      interest: 'high',
-      status: 'interested',
-      specialization: ['Fintech', 'Automatización'],
-      avatar: 'AM',
-      description: 'Directora de Innovación en Banco Popular, enfocada en soluciones de automatización bancaria.',
-      email: 'ana.morales@bancopopular.co'
-    },
-    {
-      id: 4,
-      name: 'Luis Herrera',
-      type: 'Angel Investor',
-      company: 'Independent',
-      investment: 75000,
-      interest: 'medium',
-      status: 'considering',
-      specialization: ['Startups', 'Tecnología'],
-      avatar: 'LH',
-      description: 'Ex-fundador de startup exitosa, ahora invierte en emprendimientos tecnológicos emergentes.',
-      email: 'luis.herrera@email.com'
-    },
-    {
-      id: 5,
-      name: 'Sofia Castro',
-      type: 'Venture Capital',
-      company: 'Emerging Markets Fund',
-      investment: 400000,
-      interest: 'very_high',
-      status: 'meeting_scheduled',
-      specialization: ['Mercados Emergentes', 'Scale-up'],
-      avatar: 'SC',
-      description: 'Managing Partner en fondo especializado en scale-ups de mercados emergentes latinoamericanos.',
-      email: 'sofia.castro@emfund.com'
+  const { 
+    solicitudes: investors, 
+    estadisticas, 
+    isLoading, 
+    error, 
+    fetchSolicitudes, 
+    actualizarEstado 
+  } = useInvestorRequests();
+
+  useEffect(() => {
+    fetchSolicitudes();
+  }, []);
+
+  const handleEstadoChange = async (solicitudId, nuevoEstado) => {
+    try {
+      await actualizarEstado(solicitudId, nuevoEstado);
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
     }
-  ]);
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -83,10 +37,30 @@ export default function InvestorsPage() {
     }).format(amount);
   };
 
-  
+  const totalInvestment = investors.reduce((sum, investor) => sum + (investor.montoInversion || 0), 0);
+  const averageInvestment = investors.length > 0 ? totalInvestment / investors.length : 0;
 
-  const totalInvestment = investors.reduce((sum, investor) => sum + investor.investment, 0);
-  const averageInvestment = totalInvestment / investors.length;
+  const getAsuntoLabel = (asunto) => {
+    const asuntoMap = {
+      'investment': 'Propuesta de Inversión',
+      'partnership': 'Propuesta de Sociedad',
+      'collaboration': 'Colaboración',
+      'mentoring': 'Mentoría',
+      'other': 'Otro'
+    };
+    return asuntoMap[asunto] || asunto;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.pageContainer}>
+        <EntrepreneurSidebar />
+        <div className={styles.mainContent}>
+          <p>Cargando solicitudes...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>
@@ -113,7 +87,7 @@ export default function InvestorsPage() {
           </div>
           <div className={styles.statCard}>
             <div className={styles.statValue}>
-              {investors.filter(inv => inv.status === 'negotiating' || inv.status === 'meeting_scheduled').length}
+              {investors.filter(inv => inv.estado === 'proceso' || inv.estado === 'revision').length}
             </div>
             <div className={styles.statLabel}>En Proceso Activo</div>
           </div>
@@ -124,36 +98,38 @@ export default function InvestorsPage() {
             <div key={investor.id} className={styles.investorCard}>
               <div className={styles.investorHeader}>
                 <div className={styles.investorAvatar}>
-                  {investor.avatar}
+                  {investor.inversionista.nombre.charAt(0).toUpperCase()}
                 </div>
                 <div className={styles.investorInfo}>
-                  <h3 className={styles.investorName}>{investor.name}</h3>
-                  <p className={styles.investorCompany}>{investor.company}</p>
-                  <span className={styles.investorType}>{investor.type}</span>
+                  <h3 className={styles.investorName}>{investor.inversionista.nombre}</h3>
+                  <p className={styles.investorCompany}>{investor.inversionista.email}</p>
+                  <div><p className={styles.investorCompany}> {investor.emprendimiento.nombre}</p></div>
+                  <span className={styles.investorType}>{getAsuntoLabel(investor.asunto)}</span>
                 </div>
-                
               </div>
 
               <div className={styles.investorContent}>
-                <p className={styles.investorDescription}>{investor.description}</p>
+                <p className={styles.investorDescription}>{investor.mensaje}</p>
                 
-                <div className={styles.investmentAmount}>
-                  <span className={styles.investmentLabel}>Inversión Potencial:</span>
-                  <span className={styles.investmentValue}>{formatCurrency(investor.investment)}</span>
-                </div>
-
-                <div className={styles.specializations}>
-                  <span className={styles.specializationLabel}>Especialización:</span>
-                  <div className={styles.specializationTags}>
-                    {investor.specialization.map((spec, index) => (
-                      <span key={index} className={styles.specializationTag}>
-                        {spec}
-                      </span>
-                    ))}
+                {investor.montoInversion > 0 && (
+                  <div className={styles.investmentAmount}>
+                    <span className={styles.investmentLabel}>Inversión Potencial:</span>
+                    <span className={styles.investmentValue}>{formatCurrency(investor.montoInversion)}</span>
                   </div>
-                </div>
+                )}
 
-        
+                {investor.especializaciones.length > 0 && (
+                  <div className={styles.specializations}>
+                    <span className={styles.specializationLabel}>Especialización:</span>
+                    <div className={styles.specializationTags}>
+                      {investor.especializaciones.map((spec, index) => (
+                        <span key={index} className={styles.specializationTag}>
+                          {spec}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className={styles.investorActions}>
@@ -163,9 +139,17 @@ export default function InvestorsPage() {
                 <button className={styles.viewProfileBtn}>
                   Programar Reunión
                 </button>
-                <button className={styles.viewProfileBtn}>
-                  Ver Perfil
-                </button>
+                <select
+                  value={investor.estado}
+                  onChange={(e) => handleEstadoChange(investor.id, e.target.value)}
+                  className={styles.viewProfileBtn}
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="revision">En Revisión</option>
+                  <option value="proceso">En Proceso</option>
+                  <option value="aceptada">Aceptada</option>
+                  <option value="rechazada">Rechazada</option>
+                </select>
               </div>
             </div>
           ))}
