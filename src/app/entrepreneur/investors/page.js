@@ -96,6 +96,10 @@ export default function InvestorsPage() {
         <div className={styles.investorsGrid}>
           {investors.map((investor) => (
             <div key={investor.id} className={styles.investorCard}>
+              <div className={styles.projectHeader}>
+                <h4 className={styles.projectName}> {investor.emprendimiento.nombre}</h4>
+              </div>
+              
               <div className={styles.investorHeader}>
                 <div className={styles.investorAvatar}>
                   {investor.inversionista.nombre.charAt(0).toUpperCase()}
@@ -103,7 +107,6 @@ export default function InvestorsPage() {
                 <div className={styles.investorInfo}>
                   <h3 className={styles.investorName}>{investor.inversionista.nombre}</h3>
                   <p className={styles.investorCompany}>{investor.inversionista.email}</p>
-                  <div><p className={styles.investorCompany}> {investor.emprendimiento.nombre}</p></div>
                   <span className={styles.investorType}>{getAsuntoLabel(investor.asunto)}</span>
                 </div>
               </div>

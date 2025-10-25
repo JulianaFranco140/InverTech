@@ -331,3 +331,21 @@
     justify-content: center;
   }
 }
+
+.projectHeader {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.projectName {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  background: #eff6ff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
