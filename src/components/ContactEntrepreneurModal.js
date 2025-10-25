@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { createAuthHeaders } from '../lib/tokenUtils'; 
 import styles from './ContactEntrepreneurModal.module.css';
 
 export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
@@ -13,6 +14,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState(null); 
 
   const specializationOptions = [
     { value: 'tecnologia', label: 'Tecnología' },
@@ -71,17 +73,52 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      console.log('Enviando mensaje con especializaciones:', formData.specializations);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setShowSuccess(true);
-      setTimeout(() => {
-        handleClose();
-      }, 3000);
+      if (!formData.subject || !formData.message || formData.specializations.length === 0) {
+        throw new Error('Por favor completa todos los campos requeridos');
+      }
+
+      const especializacionesLabels = formData.specializations.map(value => {
+        const option = specializationOptions.find(opt => opt.value === value);
+        return option ? option.label : value;
+      });
+
+      const montoFinal = formData.investmentAmount && formData.investmentAmount !== '' 
+        ? Number(formData.investmentAmount) 
+        : null;
+
+      const requestData = {
+        emprendimientoId: project.id,
+        asunto: formData.subject,
+        mensaje: formData.message,
+        montoInversion: montoFinal,
+        especializaciones: especializacionesLabels
+      };
+
+      const response = await fetch('/api/contact-requests', {
+        method: 'POST',
+        headers: {
+          ...createAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setShowSuccess(true);
+        setTimeout(() => {
+          handleClose();
+        }, 3000);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al enviar la solicitud');
+      }
+
     } catch (error) {
-      console.error('Error sending message:', error);
+      setError(error.message || 'Error al enviar la solicitud');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,6 +133,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
     });
     setShowSuccess(false);
     setIsSubmitting(false);
+    setError(null);
     onClose();
   };
 
@@ -132,9 +170,15 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
               </div>
             </div>
 
+            {error && (
+              <div className={styles.errorMessage}>
+                ⚠️ {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className={styles.contactForm}>
               <div className={styles.formGroup}>
-                <label htmlFor="subject">Asunto</label>
+                <label htmlFor="subject">Asunto *</label>
                 <select
                   id="subject"
                   name="subject"
@@ -160,11 +204,13 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
                   value={formData.investmentAmount}
                   onChange={handleInputChange}
                   placeholder="Ej: 50000000"
+                  min="0"
+                  step="1"
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label>Áreas de Especialización</label>
+                <label>Áreas de Especialización *</label>
                 <p className={styles.fieldDescription}>
                   Selecciona una o varias áreas en las que tienes experiencia como inversionista
                 </p>
@@ -192,7 +238,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="message">Mensaje</label>
+                <label htmlFor="message">Mensaje *</label>
                 <textarea
                   id="message"
                   name="message"
@@ -216,7 +262,7 @@ export default function ContactEntrepreneurModal({ isOpen, onClose, project }) {
                 <button 
                   type="submit" 
                   className={styles.submitButton}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || formData.specializations.length === 0}
                 >
                   {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
                 </button>
