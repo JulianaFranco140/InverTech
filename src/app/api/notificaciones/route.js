@@ -5,10 +5,7 @@ const sql = neon(process.env.DATABASE_URL);
 
 export async function GET(request) {
   try {
-    console.log('🔍 GET /api/notificaciones - Iniciando...');
 
-    // ✅ Obtener solicitudes de financiamiento recientes (últimos 30 días)
-    console.log('📊 Obteniendo solicitudes de financiamiento...');
     const solicitudesRecientes = await sql`
       SELECT 
         sf.id_solicitud,
@@ -35,8 +32,6 @@ export async function GET(request) {
       LIMIT 20
     `;
 
-    // ✅ Verificar todos los emprendimientos con nuevo campo
-    console.log('📊 Verificando todos los emprendimientos con fecha_registro_plataforma...');
     const todosEmprendimientos = await sql`
       SELECT 
         e.id_emprendimiento,
@@ -49,7 +44,6 @@ export async function GET(request) {
       ORDER BY e.fecha_registro_plataforma DESC
     `;
 
-    console.log('📊 Total de emprendimientos en BD:', todosEmprendimientos.length);
     if (todosEmprendimientos.length > 0) {
       console.log('📊 Fechas de emprendimientos:', todosEmprendimientos.slice(0, 3).map(e => ({
         nombre: e.nombre,
@@ -58,8 +52,6 @@ export async function GET(request) {
       })));
     }
 
-    // ✅ Obtener emprendimientos registrados recientemente en la plataforma (últimos 30 días)
-    console.log('📊 Obteniendo emprendimientos por fecha_registro_plataforma (últimos 30 días)...');
     const emprendimientosRecientes = await sql`
       SELECT 
         e.id_emprendimiento,
@@ -80,10 +72,8 @@ export async function GET(request) {
       LIMIT 15
     `;
 
-    // ✅ Si no hay emprendimientos recientes, ampliar a 90 días
     let emprendimientosFinales = emprendimientosRecientes;
     if (emprendimientosRecientes.length === 0) {
-      console.log('📊 No hay emprendimientos registrados en 30 días, ampliando a 90 días...');
       emprendimientosFinales = await sql`
         SELECT 
           e.id_emprendimiento,
@@ -105,9 +95,7 @@ export async function GET(request) {
       `;
     }
 
-    // ✅ Si aún no hay, tomar los más recientes registrados en la plataforma
     if (emprendimientosFinales.length === 0 && todosEmprendimientos.length > 0) {
-      console.log('📊 No hay emprendimientos con filtro de fecha, tomando los últimos registrados...');
       emprendimientosFinales = await sql`
         SELECT 
           e.id_emprendimiento,
@@ -129,10 +117,7 @@ export async function GET(request) {
       `;
     }
 
-    console.log('📊 Solicitudes recientes encontradas:', solicitudesRecientes.length);
-    console.log('📊 Emprendimientos finales encontrados:', emprendimientosFinales.length);
 
-    // ✅ Mapeo de categorías (reutilizable)
     const categoriaMap = {
       1: 'Tecnología',
       2: 'Fintech', 
@@ -146,7 +131,6 @@ export async function GET(request) {
       10: 'Otro'
     };
 
-    // ✅ Procesar solicitudes de financiamiento
     const notificacionesSolicitudes = solicitudesRecientes.map(solicitud => {
       let roi = 'N/A';
       let riesgo = 'Medio';
@@ -199,7 +183,6 @@ export async function GET(request) {
       };
     });
 
-    // ✅ Procesar emprendimientos nuevos usando fecha_registro_plataforma
     const notificacionesEmprendimientos = emprendimientosFinales.map(emprendimiento => {
       console.log('🔧 Procesando emprendimiento:', emprendimiento.nombre, 
         'ID:', emprendimiento.id_emprendimiento, 
@@ -214,7 +197,7 @@ export async function GET(request) {
         categoria: categoriaMap[emprendimiento.categoria] || 'General',
         emprendedor: emprendimiento.emprendedor_nombre || 'Sin nombre',
         emprendedorEmail: emprendimiento.emprendedor_email || '',
-        fecha: emprendimiento.fecha_registro_plataforma, // ✅ USAR FECHA DE REGISTRO EN PLATAFORMA
+        fecha: emprendimiento.fecha_registro_plataforma, 
         cantidadEmpleados: emprendimiento.cantidad_empleados || 0,
         cantidadClientes: emprendimiento.cantidad_clientes || 0,
         monto: 0,
@@ -224,27 +207,25 @@ export async function GET(request) {
       };
     });
 
-    // ✅ Combinar todas las notificaciones y ordenar por fecha
     const todasLasNotificaciones = [
       ...notificacionesSolicitudes,
       ...notificacionesEmprendimientos
     ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
-    console.log('✅ Total de notificaciones procesadas:', todasLasNotificaciones.length);
-    console.log('📊 Breakdown detallado:', {
+    console.log('Total de notificaciones procesadas:', todasLasNotificaciones.length);
+    console.log(' Breakdown detallado:', {
       solicitudes: notificacionesSolicitudes.length,
       emprendimientos: notificacionesEmprendimientos.length,
       tiposNotificaciones: todasLasNotificaciones.map(n => n.tipo)
     });
 
-    // ✅ Debug: Mostrar primeras notificaciones
     if (todasLasNotificaciones.length > 0) {
       console.log('🔍 Primeras notificaciones por tipo:');
       const solicitudesDebug = todasLasNotificaciones.filter(n => n.tipo === 'solicitud_financiamiento').slice(0, 2);
       const emprendimientosDebug = todasLasNotificaciones.filter(n => n.tipo === 'nuevo_emprendimiento').slice(0, 2);
       
-      console.log('  💰 Solicitudes:', solicitudesDebug.map(n => n.emprendimiento));
-      console.log('  🚀 Emprendimientos:', emprendimientosDebug.map(n => n.emprendimiento));
+      console.log('  Solicitudes:', solicitudesDebug.map(n => n.emprendimiento));
+      console.log('  Emprendimientos:', emprendimientosDebug.map(n => n.emprendimiento));
     }
 
     return NextResponse.json({
@@ -263,7 +244,6 @@ export async function GET(request) {
     });
 
   } catch (error) {
-    console.error('❌ Error en /api/notificaciones:', error);
     
     return NextResponse.json(
       { 
