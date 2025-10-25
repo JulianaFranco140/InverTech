@@ -1,158 +1,275 @@
 import { NextResponse } from 'next/server';
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(process.env.DATABASE_URL);
 
 export async function GET(request) {
   try {
     console.log('🔍 GET /api/notificaciones - Iniciando...');
-    
-    console.log('✅ Generando solicitudes genéricas...');
 
-    // Datos genéricos de solicitudes con riesgo calculado
-    const solicitudesGenericas = [
-      {
-        id: 1,
-        emprendimiento: 'EcoTech Solutions',
-        descripcion: 'Startup de tecnología verde enfocada en el reciclaje inteligente de residuos urbanos mediante IoT y AI',
-        categoria: 'Tecnología Verde',
-        emprendedor: 'María González',
-        monto: 500000000,
-        roi: '18%',
-        riesgo: 'Medio',
-        riesgoColor: 'blue',
-        fecha: '2024-10-15T10:30:00Z',
-        proposito: 'Expansión a 5 nuevas ciudades y desarrollo de nueva línea de productos sostenibles'
-      },
-      {
-        id: 2,
-        emprendimiento: 'FinanceAI Pro',
-        descripcion: 'Plataforma de inteligencia artificial para gestión financiera personal y empresarial',
-        categoria: 'Fintech',
-        emprendedor: 'Carlos Rodríguez',
-        monto: 800000000,
-        roi: '25%',
-        riesgo: 'Alto',
-        riesgoColor: 'orange',
-        fecha: '2024-10-12T14:15:00Z',
-        proposito: 'Desarrollo de nuevos algoritmos de AI y contratación de equipo técnico especializado'
-      },
-      {
-        id: 3,
-        emprendimiento: 'HealthTech Innovations',
-        descripcion: 'Aplicación móvil para telemedicina y monitoreo remoto de pacientes crónicos',
-        categoria: 'Salud Digital',
-        emprendedor: 'Ana López',
-        monto: 300000000,
-        roi: '12%',
-        riesgo: 'Medio',
-        riesgoColor: 'blue',
-        fecha: '2024-10-10T09:45:00Z',
-        proposito: 'Certificaciones médicas internacionales y alianzas con hospitales principales'
-      },
-      {
-        id: 4,
-        emprendimiento: 'AgriSmart Colombia',
-        descripcion: 'Sistema de agricultura inteligente con sensores IoT para optimización de cultivos',
-        categoria: 'AgriTech',
-        emprendedor: 'Pedro Martínez',
-        monto: 650000000,
-        roi: '22%',
-        riesgo: 'Alto',
-        riesgoColor: 'orange',
-        fecha: '2024-10-08T16:20:00Z',
-        proposito: 'Investigación y desarrollo de nuevos sensores, expansión a mercados rurales'
-      },
-      {
-        id: 5,
-        emprendimiento: 'EduPlatform Virtual',
-        descripcion: 'Plataforma educativa online con realidad virtual para enseñanza inmersiva',
-        categoria: 'EdTech',
-        emprendedor: 'Laura Sánchez',
-        monto: 450000000,
-        roi: '15%',
-        riesgo: 'Medio',
-        riesgoColor: 'blue',
-        fecha: '2024-10-05T11:30:00Z',
-        proposito: 'Desarrollo de contenido en VR y partnerships con instituciones educativas'
-      },
-      {
-        id: 6,
-        emprendimiento: 'LogisticsPro AI',
-        descripcion: 'Optimización de rutas de entrega mediante inteligencia artificial y machine learning',
-        categoria: 'Logística',
-        emprendedor: 'Roberto Silva',
-        monto: 700000000,
-        roi: '20%',
-        riesgo: 'Alto',
-        riesgoColor: 'orange',
-        fecha: '2024-10-03T13:10:00Z',
-        proposito: 'Escalamiento de la plataforma y expansión a mercados internacionales'
-      },
-      {
-        id: 7,
-        emprendimiento: 'CleanEnergy Solutions',
-        descripcion: 'Paneles solares inteligentes con sistema de almacenamiento energético avanzado',
-        categoria: 'Energía Renovable',
-        emprendedor: 'Diana Castro',
-        monto: 900000000,
-        roi: '28%',
-        riesgo: 'Alto',
-        riesgoColor: 'orange',
-        fecha: '2024-10-01T08:00:00Z',
-        proposito: 'Construcción de planta de manufactura y certificaciones internacionales'
-      },
-      {
-        id: 8,
-        emprendimiento: 'FoodTech Delivery',
-        descripcion: 'Plataforma de delivery con cocinas virtuales y optimización de tiempos de entrega',
-        categoria: 'FoodTech',
-        emprendedor: 'Miguel Torres',
-        monto: 400000000,
-        roi: '16%',
-        riesgo: 'Medio',
-        riesgoColor: 'blue',
-        fecha: '2024-09-28T17:45:00Z',
-        proposito: 'Apertura de 10 nuevas cocinas virtuales y desarrollo de app móvil avanzada'
-      },
-      {
-        id: 9,
-        emprendimiento: 'CryptoSecure Wallet',
-        descripcion: 'Billetera digital con seguridad blockchain para transacciones financieras',
-        categoria: 'Blockchain',
-        emprendedor: 'Andrés Morales',
-        monto: 550000000,
-        roi: '8%',
-        riesgo: 'Bajo',
-        riesgoColor: 'green',
-        fecha: '2024-09-25T12:20:00Z',
-        proposito: 'Desarrollo de protocolos de seguridad avanzados y alianzas bancarias'
-      },
-      {
-        id: 10,
-        emprendimiento: 'SmartHome IoT',
-        descripcion: 'Sistema integral de automatización del hogar con inteligencia artificial',
-        categoria: 'IoT',
-        emprendedor: 'Sofía Herrera',
-        monto: 380000000,
-        roi: '9%',
-        riesgo: 'Bajo',
-        riesgoColor: 'green',
-        fecha: '2024-09-22T15:35:00Z',
-        proposito: 'Certificaciones de seguridad y desarrollo de app móvil multiplataforma'
+    // ✅ Obtener solicitudes de financiamiento recientes (últimos 30 días)
+    console.log('📊 Obteniendo solicitudes de financiamiento...');
+    const solicitudesRecientes = await sql`
+      SELECT 
+        sf.id_solicitud,
+        sf.monto_solicitado,
+        sf.ganancia_anual,
+        sf.tipo_financiamiento,
+        sf.estado,
+        sf.fecha_solicitud,
+        sf.proposito,
+        sf.cronograma,
+        e.id_emprendimiento,
+        e.nombre as emprendimiento_nombre,
+        e.descripcion as emprendimiento_descripcion,
+        e.categoria as emprendimiento_categoria,
+        u.id_usuario as emprendedor_id,
+        u.nombre as emprendedor_nombre,
+        u.correo_electronico as emprendedor_email
+      FROM solicitudes_financiamiento sf
+      INNER JOIN emprendimientos e ON sf.emprendimiento_id = e.id_emprendimiento
+      INNER JOIN usuarios u ON e.emprendedor_id = u.id_usuario
+      WHERE sf.fecha_solicitud >= CURRENT_DATE - INTERVAL '30 days'
+        AND sf.estado IN ('pendiente', 'aprobada', 'en_revision')
+      ORDER BY sf.fecha_solicitud DESC
+      LIMIT 20
+    `;
+
+    // ✅ Verificar todos los emprendimientos con nuevo campo
+    console.log('📊 Verificando todos los emprendimientos con fecha_registro_plataforma...');
+    const todosEmprendimientos = await sql`
+      SELECT 
+        e.id_emprendimiento,
+        e.nombre,
+        e.fecha_creacion as fecha_fundacion,
+        e.fecha_registro_plataforma,
+        u.nombre as emprendedor_nombre
+      FROM emprendimientos e
+      INNER JOIN usuarios u ON e.emprendedor_id = u.id_usuario
+      ORDER BY e.fecha_registro_plataforma DESC
+    `;
+
+    console.log('📊 Total de emprendimientos en BD:', todosEmprendimientos.length);
+    if (todosEmprendimientos.length > 0) {
+      console.log('📊 Fechas de emprendimientos:', todosEmprendimientos.slice(0, 3).map(e => ({
+        nombre: e.nombre,
+        fechaFundacion: e.fecha_fundacion,
+        fechaRegistroPlataforma: e.fecha_registro_plataforma
+      })));
+    }
+
+    // ✅ Obtener emprendimientos registrados recientemente en la plataforma (últimos 30 días)
+    console.log('📊 Obteniendo emprendimientos por fecha_registro_plataforma (últimos 30 días)...');
+    const emprendimientosRecientes = await sql`
+      SELECT 
+        e.id_emprendimiento,
+        e.nombre,
+        e.descripcion,
+        e.categoria,
+        e.emprendedor_id,
+        e.fecha_creacion,
+        e.fecha_registro_plataforma,
+        e.cantidad_empleados,
+        e.cantidad_clientes,
+        u.nombre as emprendedor_nombre,
+        u.correo_electronico as emprendedor_email
+      FROM emprendimientos e
+      INNER JOIN usuarios u ON e.emprendedor_id = u.id_usuario
+      WHERE e.fecha_registro_plataforma >= CURRENT_DATE - INTERVAL '30 days'
+      ORDER BY e.fecha_registro_plataforma DESC
+      LIMIT 15
+    `;
+
+    // ✅ Si no hay emprendimientos recientes, ampliar a 90 días
+    let emprendimientosFinales = emprendimientosRecientes;
+    if (emprendimientosRecientes.length === 0) {
+      console.log('📊 No hay emprendimientos registrados en 30 días, ampliando a 90 días...');
+      emprendimientosFinales = await sql`
+        SELECT 
+          e.id_emprendimiento,
+          e.nombre,
+          e.descripcion,
+          e.categoria,
+          e.emprendedor_id,
+          e.fecha_creacion,
+          e.fecha_registro_plataforma,
+          e.cantidad_empleados,
+          e.cantidad_clientes,
+          u.nombre as emprendedor_nombre,
+          u.correo_electronico as emprendedor_email
+        FROM emprendimientos e
+        INNER JOIN usuarios u ON e.emprendedor_id = u.id_usuario
+        WHERE e.fecha_registro_plataforma >= CURRENT_DATE - INTERVAL '90 days'
+        ORDER BY e.fecha_registro_plataforma DESC
+        LIMIT 10
+      `;
+    }
+
+    // ✅ Si aún no hay, tomar los más recientes registrados en la plataforma
+    if (emprendimientosFinales.length === 0 && todosEmprendimientos.length > 0) {
+      console.log('📊 No hay emprendimientos con filtro de fecha, tomando los últimos registrados...');
+      emprendimientosFinales = await sql`
+        SELECT 
+          e.id_emprendimiento,
+          e.nombre,
+          e.descripcion,
+          e.categoria,
+          e.emprendedor_id,
+          e.fecha_creacion,
+          e.fecha_registro_plataforma,
+          e.cantidad_empleados,
+          e.cantidad_clientes,
+          u.nombre as emprendedor_nombre,
+          u.correo_electronico as emprendedor_email
+        FROM emprendimientos e
+        INNER JOIN usuarios u ON e.emprendedor_id = u.id_usuario
+        WHERE e.fecha_registro_plataforma IS NOT NULL
+        ORDER BY e.fecha_registro_plataforma DESC
+        LIMIT 10
+      `;
+    }
+
+    console.log('📊 Solicitudes recientes encontradas:', solicitudesRecientes.length);
+    console.log('📊 Emprendimientos finales encontrados:', emprendimientosFinales.length);
+
+    // ✅ Mapeo de categorías (reutilizable)
+    const categoriaMap = {
+      1: 'Tecnología',
+      2: 'Fintech', 
+      3: 'E-commerce',
+      4: 'Sostenibilidad',
+      5: 'Salud',
+      6: 'Educación',
+      7: 'Agricultura',
+      8: 'Alimentación',
+      9: 'Servicios',
+      10: 'Otro'
+    };
+
+    // ✅ Procesar solicitudes de financiamiento
+    const notificacionesSolicitudes = solicitudesRecientes.map(solicitud => {
+      let roi = 'N/A';
+      let riesgo = 'Medio';
+      let riesgoColor = 'blue';
+
+      try {
+        if (solicitud.ganancia_anual && solicitud.monto_solicitado > 0) {
+          const ganancia = parseFloat(solicitud.ganancia_anual) || 0;
+          const monto = parseFloat(solicitud.monto_solicitado) || 0;
+          
+          if (monto > 0) {
+            const roiNumerico = (ganancia / monto) * 100;
+            roi = `${Math.round(roiNumerico)}%`;
+
+            if (roiNumerico < 10) {
+              riesgo = 'Bajo';
+              riesgoColor = 'green';
+            } else if (roiNumerico >= 10 && roiNumerico < 20) {
+              riesgo = 'Medio';
+              riesgoColor = 'blue';
+            } else {
+              riesgo = 'Alto';
+              riesgoColor = 'orange';
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Error calculando ROI:', error);
       }
-    ];
 
-    console.log('✅ Solicitudes genéricas generadas:', solicitudesGenericas.length);
+      return {
+        id: `solicitud_${solicitud.id_solicitud}`,
+        tipo: 'solicitud_financiamiento',
+        titulo: 'Se ha registrado una nueva solicitud de financiamiento',
+        emprendimiento: solicitud.emprendimiento_nombre || 'Sin nombre',
+        descripcion: solicitud.emprendimiento_descripcion || 'Sin descripción disponible',
+        categoria: categoriaMap[solicitud.emprendimiento_categoria] || 'General',
+        emprendedor: solicitud.emprendedor_nombre || 'Sin nombre',
+        emprendedorEmail: solicitud.emprendedor_email || '',
+        monto: parseFloat(solicitud.monto_solicitado) || 0,
+        gananciaAnual: parseFloat(solicitud.ganancia_anual) || 0,
+        roi: roi,
+        riesgo: riesgo,
+        riesgoColor: riesgoColor,
+        tipoFinanciamiento: solicitud.tipo_financiamiento || 'No especificado',
+        estado: solicitud.estado || 'pendiente',
+        fecha: solicitud.fecha_solicitud,
+        proposito: solicitud.proposito || 'No especificado',
+        cronograma: solicitud.cronograma || 'No especificado'
+      };
+    });
+
+    // ✅ Procesar emprendimientos nuevos usando fecha_registro_plataforma
+    const notificacionesEmprendimientos = emprendimientosFinales.map(emprendimiento => {
+      console.log('🔧 Procesando emprendimiento:', emprendimiento.nombre, 
+        'ID:', emprendimiento.id_emprendimiento, 
+        'Fecha registro plataforma:', emprendimiento.fecha_registro_plataforma);
+      
+      return {
+        id: `emprendimiento_${emprendimiento.id_emprendimiento}`,
+        tipo: 'nuevo_emprendimiento',
+        titulo: 'Se ha registrado un nuevo proyecto',
+        emprendimiento: emprendimiento.nombre || 'Sin nombre',
+        descripcion: emprendimiento.descripcion || 'Sin descripción disponible',
+        categoria: categoriaMap[emprendimiento.categoria] || 'General',
+        emprendedor: emprendimiento.emprendedor_nombre || 'Sin nombre',
+        emprendedorEmail: emprendimiento.emprendedor_email || '',
+        fecha: emprendimiento.fecha_registro_plataforma, // ✅ USAR FECHA DE REGISTRO EN PLATAFORMA
+        cantidadEmpleados: emprendimiento.cantidad_empleados || 0,
+        cantidadClientes: emprendimiento.cantidad_clientes || 0,
+        monto: 0,
+        roi: 'N/A',
+        riesgo: 'Nuevo',
+        riesgoColor: 'gray'
+      };
+    });
+
+    // ✅ Combinar todas las notificaciones y ordenar por fecha
+    const todasLasNotificaciones = [
+      ...notificacionesSolicitudes,
+      ...notificacionesEmprendimientos
+    ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    console.log('✅ Total de notificaciones procesadas:', todasLasNotificaciones.length);
+    console.log('📊 Breakdown detallado:', {
+      solicitudes: notificacionesSolicitudes.length,
+      emprendimientos: notificacionesEmprendimientos.length,
+      tiposNotificaciones: todasLasNotificaciones.map(n => n.tipo)
+    });
+
+    // ✅ Debug: Mostrar primeras notificaciones
+    if (todasLasNotificaciones.length > 0) {
+      console.log('🔍 Primeras notificaciones por tipo:');
+      const solicitudesDebug = todasLasNotificaciones.filter(n => n.tipo === 'solicitud_financiamiento').slice(0, 2);
+      const emprendimientosDebug = todasLasNotificaciones.filter(n => n.tipo === 'nuevo_emprendimiento').slice(0, 2);
+      
+      console.log('  💰 Solicitudes:', solicitudesDebug.map(n => n.emprendimiento));
+      console.log('  🚀 Emprendimientos:', emprendimientosDebug.map(n => n.emprendimiento));
+    }
 
     return NextResponse.json({
       success: true,
-      solicitudes: solicitudesGenericas,
-      total: solicitudesGenericas.length
+      solicitudes: todasLasNotificaciones,
+      total: todasLasNotificaciones.length,
+      fuente: 'base_datos_real',
+      breakdown: {
+        solicitudes: notificacionesSolicitudes.length,
+        emprendimientos: notificacionesEmprendimientos.length
+      },
+      debug: {
+        totalEmprendimientosEnBD: todosEmprendimientos.length,
+        criterio: 'fecha_registro_plataforma'
+      }
     });
 
   } catch (error) {
     console.error('❌ Error en /api/notificaciones:', error);
     
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error al obtener notificaciones',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Error interno'
+      },
       { status: 500 }
     );
   }
