@@ -6,6 +6,7 @@ import { useMyContactRequests } from '../../hooks/useMyContactRequests';
 import InvestorSidebar from '../../components/InvestorSidebar';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import DeleteRequestModal from '../../components/DeleteRequestModal';
+import NotificationModal from '../../components/NotificationModal'; 
 import styles from './page.module.css';
 
 function MyRequestsPageContent() {
@@ -17,9 +18,31 @@ function MyRequestsPageContent() {
     solicitud: null
   });
 
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    type: 'info',
+    title: '',
+    message: ''
+  });
+
   useEffect(() => {
     fetchSolicitudes();
   }, []);
+
+  const showNotification = (type, title, message, autoClose = true) => {
+    setNotification({
+      isOpen: true,
+      type,
+      title,
+      message
+    });
+    
+    if (autoClose && type === 'success') {
+      setTimeout(() => {
+        setNotification(prev => ({ ...prev, isOpen: false }));
+      }, 3000);
+    }
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -51,11 +74,33 @@ function MyRequestsPageContent() {
     return asuntoMap[asunto] || asunto;
   };
 
+  const canDelete = (estado) => {
+    return estado === 'pendiente';
+  };
+
   const solicitudesFiltradas = filtroEstado === 'todos' 
     ? solicitudes 
     : solicitudes.filter(s => s.estado === filtroEstado);
 
   const handleDeleteClick = (solicitud) => {
+    if (!canDelete(solicitud.estado)) {
+      const estadoTexto = {
+        'revision': 'en revisión',
+        'proceso': 'en proceso',
+        'aceptada': 'aceptada',
+        'rechazada': 'rechazada',
+        'completada': 'completada'
+      }[solicitud.estado] || solicitud.estado;
+
+      showNotification(
+        'warning',
+        'No se puede eliminar',
+        `No puedes eliminar una solicitud que está ${estadoTexto}. Solo se pueden eliminar solicitudes pendientes.`,
+        false
+      );
+      return;
+    }
+
     setDeleteModal({
       isOpen: true,
       solicitud: solicitud
@@ -64,9 +109,22 @@ function MyRequestsPageContent() {
 
   const handleDeleteConfirm = async (solicitudId) => {
     try {
-      await eliminarSolicitud(solicitudId);
+      const result = await eliminarSolicitud(solicitudId);
+      
       setDeleteModal({ isOpen: false, solicitud: null });
+      
+      showNotification(
+        'success',
+        '¡Solicitud eliminada!',
+        result.message || 'La solicitud ha sido eliminada exitosamente.'
+      );
+      
     } catch (error) {
+      showNotification(
+        'error',
+        'Error',
+        error.message || 'Error al eliminar la solicitud'
+      );
     }
   };
 
@@ -245,7 +303,7 @@ function MyRequestsPageContent() {
                     </div>
                     
                     <div className={styles.cardActions}>
-                      {solicitud.puedeEliminar ? (
+                      {canDelete(solicitud.estado) ? (
                         <button 
                           className={styles.deleteBtn}
                           onClick={() => handleDeleteClick(solicitud)}
@@ -271,6 +329,15 @@ function MyRequestsPageContent() {
         solicitud={deleteModal.solicitud}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
+      />
+
+      <NotificationModal
+        isOpen={notification.isOpen}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+        autoClose={notification.type === 'success'}
       />
     </div>
   );

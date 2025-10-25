@@ -35,7 +35,7 @@ export function useMyContactRequests() {
         setError(`Error ${response.status}: ${errorText}`);
       }
     } catch (error) {
-      console.error('❌ Fetch error:', error);
+      console.error(' Fetch error:', error);
       setError(`Error de conexión: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -52,10 +52,11 @@ export function useMyContactRequests() {
       });
 
       if (response.ok) {
-        setSolicitudes(prev => prev.filter(s => s.id !== solicitudId));
+        const result = await response.json();
         
-        setSolicitudes(prevSolicitudes => {
-          const nuevasSolicitudes = prevSolicitudes.filter(s => s.id !== solicitudId);
+        setSolicitudes(prev => {
+          const nuevasSolicitudes = prev.filter(s => s.id !== solicitudId);
+          
           const nuevasEstadisticas = {
             pendientes: nuevasSolicitudes.filter(s => s.estado === 'pendiente').length,
             enRevision: nuevasSolicitudes.filter(s => s.estado === 'revision').length,
@@ -64,10 +65,14 @@ export function useMyContactRequests() {
             rechazadas: nuevasSolicitudes.filter(s => s.estado === 'rechazada').length
           };
           setEstadisticas(nuevasEstadisticas);
+          
           return nuevasSolicitudes;
         });
 
-        return { success: true };
+        return { 
+          success: true, 
+          message: result.message || 'Solicitud eliminada exitosamente'
+        };
       } else if (response.status === 401) {
         handleTokenError();
         throw new Error('Sesión expirada');
@@ -76,7 +81,6 @@ export function useMyContactRequests() {
         throw new Error(errorData.error || 'Error al eliminar solicitud');
       }
     } catch (error) {
-      console.error('❌ Error eliminando solicitud:', error);
       setError(error.message);
       throw error;
     }

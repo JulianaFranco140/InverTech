@@ -109,6 +109,7 @@
   background: #ffffff;
   min-width: 180px;
   transition: border-color 0.2s ease;
+  color: #374151;
 }
 
 .filterSelect:focus {

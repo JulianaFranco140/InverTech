@@ -1,0 +1,127 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  animation: modalAppear 0.2s ease forwards;
+}
+
+@keyframes modalAppear {
+  to {
+    transform: scale(1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 0 20px;
+}
+
+.iconContainer {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal.success .iconContainer {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.modal.error .iconContainer {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.modal.warning .iconContainer {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.modal.info .iconContainer {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  color: #1f2937;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+}
+
+.body {
+  padding: 16px 20px 20px 20px;
+}
+
+.message {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.footer {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.okButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.okButton:hover {
+  background: #2563eb;
+}
