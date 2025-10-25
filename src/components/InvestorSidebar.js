@@ -14,7 +14,7 @@ export default function InvestorSidebar() {
     { name: 'Dashboard', icon: '', href: '/dashboard' },
     { name: 'Oportunidades', icon: '', href: '/opportunities' },
     { name: 'Simulador', icon: '', href: '/simulation' },
-    //{ name: 'Mi Portfolio', icon: '', href: '/portfolio' },
+    { name: 'Mis solicitudes', icon: '', href: '/my-requests' },
     { name: 'Explorador de proyectos', icon: '', href: '/projects' }
     ];
 
