@@ -209,5 +209,9 @@ function EducationPageContent() {
 }
 
 export default function EducationPage() {
-  return <EducationPageContent />;
+  return (
+    <ProtectedRoute requiredRoles={[2, 3]}>
+      <EducationPageContent />
+    </ProtectedRoute>
+  );
 }
