@@ -109,7 +109,7 @@ function ChatsPageContent() {
                           {chat.inversionista.nombre}
                         </h4>
                         <p className={styles.chatProjectName}>
-                          📊 {chat.emprendimiento.nombre}
+                          {chat.emprendimiento.nombre}
                         </p>
                         <span className={styles.chatType}>
                           {chat.tipoSolicitud === 'financiamiento' ? 'Financiamiento' : 'Contacto'}
