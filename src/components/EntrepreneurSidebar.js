@@ -15,7 +15,8 @@ export default function EntrepreneurSidebar() {
     { name: 'Mis Proyectos', icon: '', href: '/entrepreneur/project' },,
     { name: 'Mis solicitudes', icon: '', href: '/entrepreneur/requests' },
     { name: 'Inversionistas', icon: '', href: '/entrepreneur/investors' },
-    { name: 'Chats', icon: '', href: '/entrepreneur/chats' }
+    { name: 'Chats', icon: '', href: '/entrepreneur/chats' },
+    { name: 'Educación Financiera', icon: '', href: '/education' },
     
   ];
 

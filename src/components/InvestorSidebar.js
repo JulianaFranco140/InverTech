@@ -16,7 +16,8 @@ export default function InvestorSidebar() {
     { name: 'Simulador', icon: '', href: '/simulation' },
     { name: 'Mis solicitudes', icon: '', href: '/my-requests' },
     { name: 'Explorador de proyectos', icon: '', href: '/projects' },
-    { name: 'Chats', icon: '', href: '/investor/chats' }
+    { name: 'Chats', icon: '', href: '/investor/chats' },
+    { name: 'Educación Financiera', icon: '', href: '/education' }
     ];
 
   const handleLogoutClick = () => {
