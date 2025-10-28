@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import InvestorSidebar from '../../components/InvestorSidebar';
-import EntrepreneurSidebar from '../../components/EntrepreneurSidebar';
-import DashboardHeader from '../../components/DashboardHeader';
+import { useAuth } from '../../../hooks/useAuth';
+import InvestorSidebar from '../../../components/InvestorSidebar';
+import EntrepreneurSidebar from '../../../components/EntrepreneurSidebar';
+import DashboardHeader from '../../../components/DashboardHeader';
 import styles from './page.module.css';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import ProtectedRoute from '../../../components/ProtectedRoute';
 
 
-function EducationPageContent() {
+function EducationsPageContent() {
   const { user } = useAuth();
 
   const educationContent = [
@@ -210,10 +210,10 @@ function EducationPageContent() {
   );
 }
 
-export default function EducationPage() {
+export default function EducationsPage() {
   return (
-    <ProtectedRoute requiredRole={2}>
-      <EducationPageContent />
+    <ProtectedRoute requiredRole={1}>
+      <EducationsPageContent />
     </ProtectedRoute>
   );
 }
