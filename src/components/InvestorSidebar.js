@@ -1,25 +1,26 @@
-'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import styles from './InvestorSidebar.module.css';
-import { useLogout } from '../hooks/useLogout';
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import styles from "./InvestorSidebar.module.css";
+import { useLogout } from "../hooks/useLogout";
 
 export default function InvestorSidebar() {
   const pathname = usePathname();
   const { logout } = useLogout();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  
+
   const menuItems = [
-    { name: 'Dashboard', icon: '', href: '/dashboard' },
-    { name: 'Oportunidades', icon: '', href: '/opportunities' },
-    { name: 'Mi Portafolio', icon: '', href: '/investor/portfolio' },
-    { name: 'Simulador', icon: '', href: '/simulation' },
-    { name: 'Mis solicitudes', icon: '', href: '/my-requests' },
-    { name: 'Explorador de proyectos', icon: '', href: '/projects' },
-    { name: 'Chats', icon: '', href: '/investor/chats' },
-    { name: 'Educación Financiera', icon: '', href: '/education' }
-    ];
+    { name: "Dashboard", icon: "", href: "/dashboard" },
+    { name: "Oportunidades", icon: "", href: "/opportunities" },
+    { name: "Mi Portafolio", icon: "", href: "/investor/portfolio" },
+    { name: "Simulador", icon: "", href: "/simulation" },
+    { name: "Mis solicitudes", icon: "", href: "/my-requests" },
+    { name: "Explorador de proyectos", icon: "", href: "/projects" },
+    { name: "Chats", icon: "", href: "/investor/chats" },
+    { name: "Chat de Asistencia", icon: "", href: "/investor/ai-chat" },
+    { name: "Educación Financiera", icon: "", href: "/education" },
+  ];
 
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
@@ -38,7 +39,9 @@ export default function InvestorSidebar() {
       <div className={styles.logoSection}>
         <div className={styles.logo}>
           <Link href="/dashboard">
-            <span className={styles.logoText}>Inver<span className={styles.logoHighlight}>Tech</span></span>
+            <span className={styles.logoText}>
+              Inver<span className={styles.logoHighlight}>Tech</span>
+            </span>
           </Link>
         </div>
         <p className={styles.userType}>Panel de Inversionista</p>
@@ -46,10 +49,12 @@ export default function InvestorSidebar() {
 
       <nav className={styles.navigation}>
         {menuItems.map((item) => (
-          <Link 
-            key={item.name} 
-            href={item.href} 
-            className={`${styles.navItem} ${pathname === item.href ? styles.navItemActive : ''}`}
+          <Link
+            key={item.name}
+            href={item.href}
+            className={`${styles.navItem} ${
+              pathname === item.href ? styles.navItemActive : ""
+            }`}
           >
             <span className={styles.navIcon}>{item.icon}</span>
             <span className={styles.navText}>{item.name}</span>
@@ -69,19 +74,15 @@ export default function InvestorSidebar() {
             </div>
             <div className={styles.modalContent}>
               <p>¿Estás seguro de que deseas cerrar sesión?</p>
-              <p className={styles.modalSubtext}>Serás redirigido a la página principal.</p>
+              <p className={styles.modalSubtext}>
+                Serás redirigido a la página principal.
+              </p>
             </div>
             <div className={styles.modalActions}>
-              <button 
-                onClick={cancelLogout} 
-                className={styles.cancelBtn}
-              >
+              <button onClick={cancelLogout} className={styles.cancelBtn}>
                 Cancelar
               </button>
-              <button 
-                onClick={confirmLogout} 
-                className={styles.confirmBtn}
-              >
+              <button onClick={confirmLogout} className={styles.confirmBtn}>
                 Cerrar Sesión
               </button>
             </div>
