@@ -11,6 +11,10 @@ function ChatsPageContent() {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   useEffect(() => {
     // Cargar chats desde la API
@@ -63,6 +67,148 @@ function ChatsPageContent() {
 
     loadChats();
   }, []);
+
+  // Cargar mensajes cuando se selecciona un chat
+  useEffect(() => {
+    if (selectedChat) {
+      loadMessages(selectedChat.id);
+      markMessagesAsRead(selectedChat.id);
+
+      // Poll para actualizar mensajes cada 3 segundos
+      const interval = setInterval(() => {
+        loadMessages(selectedChat.id);
+      }, 3000);
+
+      return () => clearInterval(interval);
+    } else {
+      // Limpiar mensajes cuando se deselecciona el chat
+      setMessages([]);
+    }
+  }, [selectedChat]);
+
+  const loadMessages = async (chatId) => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      if (!token) return;
+
+      // Solo mostrar estado de carga en la primera carga
+      if (messages.length === 0) {
+        setIsLoadingMessages(true);
+      }
+
+      const response = await fetch(`/api/chat/${chatId}/messages`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Evitar duplicados: solo actualizar si hay cambios
+        setMessages((prevMessages) => {
+          // Si no hay mensajes previos, usar los nuevos
+          if (prevMessages.length === 0) return data.messages;
+
+          // Si la cantidad de mensajes cambió, actualizar
+          if (prevMessages.length !== data.messages.length)
+            return data.messages;
+
+          // Si el último mensaje es diferente, actualizar
+          const lastPrev = prevMessages[prevMessages.length - 1];
+          const lastNew = data.messages[data.messages.length - 1];
+          if (lastPrev?.id_mensaje !== lastNew?.id_mensaje)
+            return data.messages;
+
+          // No hay cambios, mantener mensajes actuales
+          return prevMessages;
+        });
+      }
+    } catch (error) {
+      console.error("Error al cargar mensajes:", error);
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  };
+
+  const markMessagesAsRead = async (chatId) => {
+    try {
+      const token = localStorage.getItem("auth-token");
+      if (!token) return;
+
+      await fetch(`/api/chat/${chatId}/messages/read`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Actualizar el contador de mensajes no leídos en la lista
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === chatId ? { ...chat, mensajesNoLeidos: 0 } : chat
+        )
+      );
+    } catch (error) {
+      console.error("Error al marcar mensajes como leídos:", error);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+
+    if (!newMessage.trim() || isSending || !selectedChat) return;
+
+    try {
+      setIsSending(true);
+      const token = localStorage.getItem("auth-token");
+      if (!token) return;
+
+      const response = await fetch(`/api/chat/${selectedChat.id}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ mensaje: newMessage }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessages((prev) => [...prev, data.data]);
+        setNewMessage("");
+
+        // Actualizar el último mensaje en la lista de chats
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.id === selectedChat.id
+              ? {
+                  ...chat,
+                  ultimoMensaje: newMessage,
+                  fechaUltimoMensaje: new Date().toISOString(),
+                }
+              : chat
+          )
+        );
+      } else {
+        alert("Error al enviar mensaje");
+      }
+    } catch (error) {
+      console.error("Error al enviar mensaje:", error);
+      alert("Error al enviar mensaje");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const formatMessageTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("es-CO", {
@@ -173,22 +319,65 @@ function ChatsPageContent() {
                 </div>
 
                 <div className={styles.chatMessages}>
-                  <div className={styles.chatPlaceholder}>
-                    <p>Funcionalidad de chat en desarrollo...</p>
-                    <p>
-                      Pronto podrás enviar y recibir mensajes en tiempo real.
-                    </p>
-                  </div>
+                  {isLoadingMessages && messages.length === 0 ? (
+                    <div className={styles.chatPlaceholder}>
+                      <p>Cargando mensajes...</p>
+                    </div>
+                  ) : messages.length === 0 ? (
+                    <div className={styles.chatPlaceholder}>
+                      <p>No hay mensajes aún</p>
+                      <p>
+                        Envía el primer mensaje para iniciar la conversación
+                      </p>
+                    </div>
+                  ) : (
+                    messages.map((msg) => {
+                      const token = localStorage.getItem("auth-token");
+                      const decoded = token
+                        ? JSON.parse(atob(token.split(".")[1]))
+                        : null;
+                      const isMyMessage =
+                        decoded && msg.remitente_id === decoded.userId;
+
+                      return (
+                        <div
+                          key={msg.id_mensaje}
+                          className={`${styles.messageItem} ${
+                            isMyMessage ? styles.myMessage : styles.otherMessage
+                          }`}
+                        >
+                          <div className={styles.messageContent}>
+                            {!isMyMessage && (
+                              <span className={styles.messageSender}>
+                                {msg.remitente_nombre}
+                              </span>
+                            )}
+                            <p className={styles.messageText}>{msg.mensaje}</p>
+                            <span className={styles.messageTime}>
+                              {formatMessageTime(msg.fecha_envio)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
 
-                <div className={styles.chatInput}>
+                <form className={styles.chatInput} onSubmit={handleSendMessage}>
                   <input
                     type="text"
                     placeholder="Escribe un mensaje..."
-                    disabled
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    disabled={isSending}
                   />
-                  <button disabled>Enviar</button>
-                </div>
+                  <button
+                    type="submit"
+                    disabled={isSending || !newMessage.trim()}
+                  >
+                    {isSending ? "Enviando..." : "Enviar"}
+                  </button>
+                </form>
               </div>
             ) : (
               <div className={styles.noChatSelected}>
