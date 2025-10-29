@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import EntrepreneurSidebar from '../../../components/EntrepreneurSidebar';
-import DashboardHeader from '../../../components/DashboardHeader';
-import ProtectedRoute from '../../../components/ProtectedRoute';
-import styles from './page.module.css';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import EntrepreneurSidebar from "../../../components/EntrepreneurSidebar";
+import DashboardHeader from "../../../components/DashboardHeader";
+import ProtectedRoute from "../../../components/ProtectedRoute";
+import styles from "./page.module.css";
 
 function ChatsPageContent() {
   const [chats, setChats] = useState([]);
@@ -13,56 +13,70 @@ function ChatsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setChats([
-        {
-          id: 1,
-          inversionista: {
-            nombre: 'María González',
-            email: 'maria@techventures.co'
-          },
-          emprendimiento: {
-            nombre: 'TechSolutions'
-          },
-          tipoSolicitud: 'contacto',
-          ultimoMensaje: 'Hola, me interesa tu proyecto...',
-          fechaUltimoMensaje: '2024-10-25T10:30:00',
-          mensajesNoLeidos: 2,
-          estado: 'activo'
-        },
-        {
-          id: 2,
-          inversionista: {
-            nombre: 'Carlos Rodríguez',
-            email: 'carlos@innovationcapital.com'
-          },
-          emprendimiento: {
-            nombre: 'EcoApp'
-          },
-          tipoSolicitud: 'financiamiento',
-          ultimoMensaje: 'Revisé tu propuesta de financiamiento...',
-          fechaUltimoMensaje: '2024-10-24T15:45:00',
-          mensajesNoLeidos: 0,
-          estado: 'activo'
+    // Cargar chats desde la API
+    const loadChats = async () => {
+      try {
+        const token = localStorage.getItem("auth-token");
+
+        if (!token) {
+          setIsLoading(false);
+          return;
         }
-      ]);
-      setIsLoading(false);
-    }, 1000);
+
+        const response = await fetch("/api/chat", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Formatear los chats para el componente
+          const formattedChats = data.chats.map((chat) => ({
+            id: chat.id_chat,
+            inversionista: {
+              nombre: chat.inversionista_nombre,
+              email: chat.inversionista_email,
+            },
+            emprendimiento: {
+              nombre: chat.emprendimiento_nombre,
+            },
+            tipoSolicitud: chat.tipo_solicitud,
+            ultimoMensaje: chat.ultimo_mensaje || "Sin mensajes",
+            fechaUltimoMensaje: chat.fecha_ultimo_mensaje || chat.fecha_inicio,
+            mensajesNoLeidos: parseInt(chat.mensajes_no_leidos) || 0,
+            estado: chat.estado,
+          }));
+
+          setChats(formattedChats);
+        } else {
+          console.error("Error al cargar chats");
+        }
+      } catch (error) {
+        console.error("Error al cargar chats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadChats();
   }, []);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('es-CO', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("es-CO", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
     <div className={styles.pageContainer}>
       <EntrepreneurSidebar />
-      
+
       <div className={styles.mainContent}>
         <DashboardHeader
           title="Mis Chats"
@@ -75,7 +89,7 @@ function ChatsPageContent() {
             <div className={styles.chatsHeader}>
               <h3>Conversaciones Activas</h3>
               <span className={styles.chatsCount}>
-                {chats.length} chat{chats.length !== 1 ? 's' : ''}
+                {chats.length} chat{chats.length !== 1 ? "s" : ""}
               </span>
             </div>
 
@@ -87,17 +101,25 @@ function ChatsPageContent() {
             ) : chats.length === 0 ? (
               <div className={styles.emptyState}>
                 <h4>No tienes chats activos</h4>
-                <p>Cuando un inversionista se interese en tus proyectos, aparecerán aquí.</p>
-                <Link href="/entrepreneur/investors" className={styles.viewInvestorsBtn}>
+                <p>
+                  Cuando un inversionista se interese en tus proyectos,
+                  aparecerán aquí.
+                </p>
+                <Link
+                  href="/entrepreneur/investors"
+                  className={styles.viewInvestorsBtn}
+                >
                   Ver Solicitudes de Inversionistas
                 </Link>
               </div>
             ) : (
               <div className={styles.chatItems}>
                 {chats.map((chat) => (
-                  <div 
-                    key={chat.id} 
-                    className={`${styles.chatItem} ${selectedChat?.id === chat.id ? styles.chatItemActive : ''}`}
+                  <div
+                    key={chat.id}
+                    className={`${styles.chatItem} ${
+                      selectedChat?.id === chat.id ? styles.chatItemActive : ""
+                    }`}
                     onClick={() => setSelectedChat(chat)}
                   >
                     <div className={styles.chatItemHeader}>
@@ -112,7 +134,9 @@ function ChatsPageContent() {
                           {chat.emprendimiento.nombre}
                         </p>
                         <span className={styles.chatType}>
-                          {chat.tipoSolicitud === 'financiamiento' ? 'Financiamiento' : 'Contacto'}
+                          {chat.tipoSolicitud === "financiamiento"
+                            ? "Financiamiento"
+                            : "Contacto"}
                         </span>
                       </div>
                       <div className={styles.chatMeta}>
@@ -143,25 +167,27 @@ function ChatsPageContent() {
                     <h3>{selectedChat.inversionista.nombre}</h3>
                     <p>Proyecto: {selectedChat.emprendimiento.nombre}</p>
                   </div>
-                  <button 
+                  <button
                     className={styles.closeChatBtn}
                     onClick={() => setSelectedChat(null)}
                   >
                     ✕
                   </button>
                 </div>
-                
+
                 <div className={styles.chatMessages}>
                   <div className={styles.chatPlaceholder}>
                     <p>Funcionalidad de chat en desarrollo...</p>
-                    <p>Pronto podrás enviar y recibir mensajes en tiempo real.</p>
+                    <p>
+                      Pronto podrás enviar y recibir mensajes en tiempo real.
+                    </p>
                   </div>
                 </div>
 
                 <div className={styles.chatInput}>
-                  <input 
-                    type="text" 
-                    placeholder="Escribe un mensaje..." 
+                  <input
+                    type="text"
+                    placeholder="Escribe un mensaje..."
                     disabled
                   />
                   <button disabled>Enviar</button>
@@ -170,7 +196,9 @@ function ChatsPageContent() {
             ) : (
               <div className={styles.noChatSelected}>
                 <h3>Selecciona un chat</h3>
-                <p>Elige una conversación de la lista para comenzar a chatear.</p>
+                <p>
+                  Elige una conversación de la lista para comenzar a chatear.
+                </p>
               </div>
             )}
           </div>
