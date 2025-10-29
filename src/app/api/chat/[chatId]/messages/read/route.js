@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server';
-import sql from '../../../../../../lib/db';
-import { verifyToken } from '../../../../../../lib/auth';
+import { NextResponse } from "next/server";
+import sql from "../../../../../../lib/db";
+import { verifyToken } from "../../../../../../lib/auth";
 
 // PATCH - Marcar mensajes como leídos
 export async function PATCH(request, { params }) {
   try {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "");
     if (!token) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+      return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
 
     const userId = decoded.userId;
@@ -28,7 +28,7 @@ export async function PATCH(request, { params }) {
 
     if (chatCheck.length === 0) {
       return NextResponse.json(
-        { error: 'No tienes acceso a este chat' },
+        { error: "No tienes acceso a este chat" },
         { status: 403 }
       );
     }
@@ -44,14 +44,13 @@ export async function PATCH(request, { params }) {
     `;
 
     return NextResponse.json({
-      message: 'Mensajes marcados como leídos',
-      count: result.length
+      message: "Mensajes marcados como leídos",
+      count: result.length,
     });
-
   } catch (error) {
-    console.error('Error al marcar mensajes como leídos:', error);
+    console.error("Error al marcar mensajes como leídos:", error);
     return NextResponse.json(
-      { error: 'Error al marcar mensajes como leídos', details: error.message },
+      { error: "Error al marcar mensajes como leídos", details: error.message },
       { status: 500 }
     );
   }
