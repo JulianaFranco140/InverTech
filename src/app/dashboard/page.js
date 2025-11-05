@@ -64,6 +64,10 @@ function DashboardPageContent() {
     }
   };
 
+  const handleGoToAIChat = () => {
+    router.push('/investor/ai-chat');
+  };
+
   const handleViewOpportunityDetails = (opportunityId) => {
     // Navegar a la página de oportunidades con el ID específico
     router.push(`/opportunities?highlight=${opportunityId}`);
@@ -154,21 +158,64 @@ function DashboardPageContent() {
         </div>
 
         <div className={styles.contentGrid}>
-          <div className={styles.chartSection}>
-            <h2 className={styles.sectionTitle}>Rendimiento del Portfolio</h2>
-            <p className={styles.sectionSubtitle}>Últimos 12 meses</p>
-            <div className={styles.chartPlaceholder}>
-              <p className={styles.chartText}>Gráfico de Rendimiento</p>
-              <p className={styles.chartSubtext}>Integración con biblioteca de gráficos</p>
-              <div className={styles.performanceIndicators}>
-                <div className={styles.indicator}>
-                  <span className={styles.indicatorValue}>+28.5%</span>
-                  <span className={styles.indicatorLabel}>Mejor mes</span>
+          <div className={styles.aiChatSection}>
+            <div className={styles.aiChatCard}>
+              <div className={styles.aiChatIcon}>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C13.1046 2 14 2.89543 14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2Z" fill="currentColor"/>
+                  <path d="M12 8C13.1046 8 14 8.89543 14 10C14 11.1046 13.1046 12 12 12C10.8954 12 10 11.1046 10 10C10 8.89543 10.8954 8 12 8Z" fill="currentColor"/>
+                  <path d="M12 14C13.1046 14 14 14.8954 14 16C14 17.1046 13.1046 18 12 18C10.8954 18 10 17.1046 10 16C10 14.8954 10.8954 14 12 14Z" fill="currentColor"/>
+                  <path d="M6 8C7.10457 8 8 8.89543 8 10C8 11.1046 7.10457 12 6 12C4.89543 12 4 11.1046 4 10C4 8.89543 4.89543 8 6 8Z" fill="currentColor"/>
+                  <path d="M18 8C19.1046 8 20 8.89543 20 10C20 11.1046 19.1046 12 18 12C16.8954 12 16 11.1046 16 10C16 8.89543 16.8954 8 18 8Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div className={styles.aiChatContent}>
+                <h3 className={styles.aiChatTitle}>¿Quieres recibir mejor información?</h3>
+                <p className={styles.aiChatSubtitle}>
+                  Obtén análisis personalizados, recomendaciones de inversión y respuestas a tus preguntas financieras con nuestro asistente de IA especializado.
+                </p>
+                <div className={styles.aiChatFeatures}>
+                  <div className={styles.feature}>
+                    <span className={styles.featureIcon}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C10.9289 21 9.92295 20.7947 9.01275 20.4246L4 21L5.57538 15.9872C5.20532 15.077 5 14.0711 5 13C5 8.02944 9.02944 4 14 4C18.9706 4 21 8.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                    <span>Análisis de mercado en tiempo real</span>
+                  </div>
+                  <div className={styles.feature}>
+                    <span className={styles.featureIcon}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3V18C3 19.1046 3.89543 20 5 20H21M7 16L12 11L16 15L21 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="7" cy="16" r="2" fill="currentColor"/>
+                        <circle cx="12" cy="11" r="2" fill="currentColor"/>
+                        <circle cx="16" cy="15" r="2" fill="currentColor"/>
+                      </svg>
+                    </span>
+                    <span>Recomendaciones personalizadas</span>
+                  </div>
+                  <div className={styles.feature}>
+                    <span className={styles.featureIcon}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                        <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="2"/>
+                        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                      </svg>
+                    </span>
+                    <span>Estrategias de inversión optimizadas</span>
+                  </div>
                 </div>
-                <div className={styles.indicator}>
-                  <span className={styles.indicatorValue}>-8.2%</span>
-                  <span className={styles.indicatorLabel}>Peor mes</span>
-                </div>
+                <button 
+                  className={styles.aiChatButton}
+                  onClick={handleGoToAIChat}
+                >
+                  <span className={styles.buttonIcon}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor"/>
+                    </svg>
+                  </span>
+                  Chatear con IA
+                </button>
               </div>
             </div>
           </div>
