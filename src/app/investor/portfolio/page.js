@@ -88,9 +88,7 @@ function PortfolioPageContent() {
     totalInversion: solicitudes.reduce((sum, sol) => sum + sol.montoInversion, 0),
     totalCommitted: totalInvestmentCommitted,
     activeInvestments: activeInvestments,
-    pendingReviews: estadisticas.pendientes + estadisticas.enRevision,
-    successRate: solicitudes.length > 0 ? 
-      ((estadisticas.aceptadas / solicitudes.length) * 100).toFixed(1) : 0
+    pendingReviews: estadisticas.pendientes + estadisticas.enRevision
   };
 
   if (isLoading) {
@@ -159,22 +157,9 @@ function PortfolioPageContent() {
               <span className={styles.statLabel}>Inversiones Activas</span>
             </div>
           </div>
-          
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 3V21L9 18L15 21L21 18V6L15 9L9 6L3 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9 6V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M15 9V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <div className={styles.statContent}>
-              <span className={styles.statNumber}>{portfolioStats.successRate}%</span>
-              <span className={styles.statLabel}>Tasa de Éxito</span>
-            </div>
-          </div>
         </div>
 
+        {/* Filtros */}
         <div className={styles.filtersSection}>
           <div className={styles.filterGroup}>
             <h3>Filtrar por Estado</h3>
