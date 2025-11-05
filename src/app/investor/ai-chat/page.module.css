@@ -23,7 +23,7 @@
 }
 
 .chatHeader {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
   padding: 2rem;
   border-radius: 12px 12px 0 0;
   color: white;
@@ -219,6 +219,7 @@
 
 .messageInput {
   flex: 1;
+  background: #ebe8e8;
   padding: 0.875rem 1.25rem;
   border: 2px solid #e0e0e0;
   border-radius: 24px;

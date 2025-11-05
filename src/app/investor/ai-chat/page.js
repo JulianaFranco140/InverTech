@@ -12,7 +12,6 @@ function AIChatPageContent() {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll al final cuando hay nuevos mensajes
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -26,7 +25,6 @@ function AIChatPageContent() {
 
     if (!newMessage.trim() || isSending) return;
 
-    // Agregar mensaje del usuario
     const userMessage = {
       role: "user",
       content: newMessage,
@@ -61,7 +59,6 @@ function AIChatPageContent() {
 
       const data = await response.json();
 
-      // Agregar respuesta del asistente
       const assistantMessage = {
         role: "assistant",
         content: data.content,
@@ -71,7 +68,6 @@ function AIChatPageContent() {
     } catch (error) {
       console.error("Error al enviar mensaje:", error);
 
-      // Agregar mensaje de error
       const errorMessage = {
         role: "assistant",
         content: `Lo siento, ocurrió un error: ${error.message}. Por favor intenta de nuevo.`,
