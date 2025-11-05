@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../hooks/useAuth';
 import { useOpportunities } from '../../hooks/useOpportunities';
@@ -8,6 +9,9 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import styles from './page.module.css';
 
 function OpportunitiesPageContent() {
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('highlight');
+  
   const { user, isLoading: userLoading } = useAuth();
   const { 
     opportunities, 
@@ -34,6 +38,26 @@ function OpportunitiesPageContent() {
   useEffect(() => {
     searchOpportunities(searchTerm);
   }, [searchTerm]);
+
+  // Efecto para hacer scroll a la oportunidad destacada
+  useEffect(() => {
+    if (highlightId && opportunities.length > 0) {
+      const highlightElement = document.getElementById(`opportunity-${highlightId}`);
+      if (highlightElement) {
+        setTimeout(() => {
+          highlightElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          // Agregar clase de resaltado temporalmente
+          highlightElement.classList.add(styles.highlighted);
+          setTimeout(() => {
+            highlightElement.classList.remove(styles.highlighted);
+          }, 3000);
+        }, 500);
+      }
+    }
+  }, [highlightId, opportunities]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -146,7 +170,11 @@ function OpportunitiesPageContent() {
           ) : (
             <div className={styles.opportunitiesGrid}>
               {opportunities.map(opportunity => (
-                <div key={opportunity.id} className={styles.opportunityCard}>
+                <div 
+                  key={opportunity.id} 
+                  id={`opportunity-${opportunity.id}`}
+                  className={`${styles.opportunityCard} ${highlightId == opportunity.id ? styles.highlighted : ''}`}
+                >
                   <div className={styles.cardHeader}>
                     <div className={styles.cardImage}>
                       <div className={styles.imagePlaceholder}>

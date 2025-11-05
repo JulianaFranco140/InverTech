@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import InvestorSidebar from '../../components/InvestorSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
@@ -11,7 +12,7 @@ import { useMyContactRequests } from '../../hooks/useMyContactRequests';
 import { useOpportunities } from '../../hooks/useOpportunities';
 
 function DashboardPageContent() {
-
+  const router = useRouter();
   const {user, isLoading:userLoading} = useAuth();
   const { solicitudes, isLoading: solicitudesLoading, fetchSolicitudes } = useMyContactRequests();
   const { opportunities, isLoading: opportunitiesLoading, fetchOpportunities } = useOpportunities();
@@ -61,6 +62,11 @@ function DashboardPageContent() {
     } else {
       return { risk: 'Alto', riskColor: 'orange' };
     }
+  };
+
+  const handleViewOpportunityDetails = (opportunityId) => {
+    // Navegar a la página de oportunidades con el ID específico
+    router.push(`/opportunities?highlight=${opportunityId}`);
   };
 
   const totalInteresExpresado = solicitudes.reduce((sum, sol) => sum + (sol.montoInversion || 0), 0);
@@ -191,7 +197,12 @@ function DashboardPageContent() {
                       <span className={styles.oppValue}>{opp.roi}</span>
                     </div>
                   </div>
-                  <button className={styles.detailsBtn}>Ver Detalles</button>
+                  <button 
+                    className={styles.detailsBtn}
+                    onClick={() => handleViewOpportunityDetails(opp.id)}
+                  >
+                    Ver Detalles
+                  </button>
                 </div>
               ))}
             </div>

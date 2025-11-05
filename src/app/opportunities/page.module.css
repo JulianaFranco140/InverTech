@@ -529,3 +529,23 @@
     gap: 8px;
   }
 }
+
+/* Estilos para resaltado de oportunidad */
+.highlighted {
+  border: 2px solid var(--primary-blue) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
+  transform: scale(1.02) !important;
+  animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+  0% { 
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+  }
+  100% { 
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+}
