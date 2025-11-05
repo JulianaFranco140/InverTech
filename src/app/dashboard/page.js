@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import InvestorSidebar from '../../components/InvestorSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
@@ -7,13 +7,21 @@ import MetricCard from '../../components/MetricCard';
 import NotificationsModal from '../../components/NotificationsModal'; 
 import styles from './page.module.css';
 import {useAuth} from '../../hooks/useAuth';
+import { useMyContactRequests } from '../../hooks/useMyContactRequests';
 
 function DashboardPageContent() {
 
   const {user, isLoading:userLoading} = useAuth();
+  const { solicitudes, isLoading: solicitudesLoading, fetchSolicitudes } = useMyContactRequests();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('month');
-  const [showNotifications, setShowNotifications] = useState(false); 
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    if (user && !userLoading) {
+      fetchSolicitudes();
+    }
+  }, [user, userLoading]); 
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-CO', {
@@ -36,23 +44,23 @@ function DashboardPageContent() {
     }
   };
 
+  const totalInteresExpresado = solicitudes.reduce((sum, sol) => sum + (sol.montoInversion || 0), 0);
+  
+  const inversionesActivas = solicitudes.filter(sol => 
+    sol.estado !== 'pendiente' && sol.estado !== 'rechazada'
+  ).length;
+
   const metricsData = [
     {
-      label: 'Portfolio Total',
-      value: formatCurrencyShort(1000000000),
-      change: '+12.5% vs mes anterior',
-      isPositive: true
-    },
-    {
-      label: 'Retorno Anual',
-      value: '15.8%',
-      change: '+2.3% vs objetivo anual',
+      label: 'Portafolio Total',
+      value: formatCurrencyShort(totalInteresExpresado),
+      change: 'Interés expresado',
       isPositive: true
     },
     {
       label: 'Inversiones Activas',
-      value: '12',
-      change: '+3 este mes',
+      value: inversionesActivas.toString(),
+      change: 'En proceso o aceptadas',
       isPositive: true
     },
     {
@@ -81,8 +89,7 @@ function DashboardPageContent() {
     }
   ];
 
-
-    if (userLoading) {
+  if (userLoading || solicitudesLoading) {
     return (
       <div className={styles.dashboardContainer}>
         <InvestorSidebar />
@@ -95,7 +102,6 @@ function DashboardPageContent() {
       </div>
     );
   }
-
 
   if (!user) {
     return (
