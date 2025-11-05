@@ -243,7 +243,31 @@
   color: #64748b;
 }
 
-/* Opportunities */
+.opportunitiesScrollContainer {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-top: 16px;
+}
+
+.opportunitiesScrollContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.opportunitiesScrollContainer::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.opportunitiesScrollContainer::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.opportunitiesScrollContainer::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .opportunitiesList {
   display: flex;
   flex-direction: column;

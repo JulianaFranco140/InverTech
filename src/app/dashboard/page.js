@@ -69,7 +69,6 @@ function DashboardPageContent() {
   };
 
   const handleViewOpportunityDetails = (opportunityId) => {
-    // Navegar a la página de oportunidades con el ID específico
     router.push(`/opportunities?highlight=${opportunityId}`);
   };
 
@@ -224,8 +223,9 @@ function DashboardPageContent() {
             <h2 className={styles.sectionTitle}>Oportunidades Recomendadas</h2>
             <p className={styles.sectionSubtitle}>Basado en tu perfil de riesgo</p>
             
-            <div className={styles.opportunitiesList}>
-              {opportunities.map((opp) => (
+            <div className={styles.opportunitiesScrollContainer}>
+              <div className={styles.opportunitiesList}>
+                {opportunities.map((opp) => (
                 <div key={opp.id} className={styles.opportunityCard}>
                   <div className={styles.oppHeader}>
                     <h3 className={styles.oppName}>{opp.name}</h3>
@@ -252,6 +252,7 @@ function DashboardPageContent() {
                   </button>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         </div>
