@@ -8,11 +8,13 @@ import NotificationsModal from '../../components/NotificationsModal';
 import styles from './page.module.css';
 import {useAuth} from '../../hooks/useAuth';
 import { useMyContactRequests } from '../../hooks/useMyContactRequests';
+import { useOpportunities } from '../../hooks/useOpportunities';
 
 function DashboardPageContent() {
 
   const {user, isLoading:userLoading} = useAuth();
   const { solicitudes, isLoading: solicitudesLoading, fetchSolicitudes } = useMyContactRequests();
+  const { opportunities, isLoading: opportunitiesLoading, fetchOpportunities } = useOpportunities();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -20,6 +22,7 @@ function DashboardPageContent() {
   useEffect(() => {
     if (user && !userLoading) {
       fetchSolicitudes();
+      fetchOpportunities();
     }
   }, [user, userLoading]); 
 
@@ -44,6 +47,22 @@ function DashboardPageContent() {
     }
   };
 
+  const getRiskLevel = (investment, roi) => {
+    if (!roi || roi === 'N/A') {
+      return { risk: 'Medio', riskColor: 'blue' };
+    }
+
+    const roiNumeric = parseFloat(roi.replace('%', ''));
+    
+    if (roiNumeric < 10) {
+      return { risk: 'Bajo', riskColor: 'green' };
+    } else if (roiNumeric < 20) {
+      return { risk: 'Medio', riskColor: 'blue' };
+    } else {
+      return { risk: 'Alto', riskColor: 'orange' };
+    }
+  };
+
   const totalInteresExpresado = solicitudes.reduce((sum, sol) => sum + (sol.montoInversion || 0), 0);
   
   const inversionesActivas = solicitudes.filter(sol => 
@@ -65,31 +84,12 @@ function DashboardPageContent() {
     },
     {
       label: 'Riesgo Promedio',
-      value: 'Medio',
+      value: 'Alto',
       subtext: 'Portafolio diversificado'
     }
   ];
 
-  const opportunities = [
-    {
-      name: 'EcoTech Solutions',
-      description: 'Tecnología verde para el procesamiento de residuos',
-      investment: '$300.000.000',
-      roi: '8-12%',
-      risk: 'Bajo',
-      riskColor: 'green'
-    },
-    {
-      name: 'FinApp Innovations',
-      description: 'Aplicación móvil para gestión financiera personal',
-      investment: '$600.000.000',
-      roi: '15-20%',
-      risk: 'Medio',
-      riskColor: 'blue'
-    }
-  ];
-
-  if (userLoading || solicitudesLoading) {
+  if (userLoading || solicitudesLoading || opportunitiesLoading) {
     return (
       <div className={styles.dashboardContainer}>
         <InvestorSidebar />
@@ -172,8 +172,8 @@ function DashboardPageContent() {
             <p className={styles.sectionSubtitle}>Basado en tu perfil de riesgo</p>
             
             <div className={styles.opportunitiesList}>
-              {opportunities.map((opp, index) => (
-                <div key={index} className={styles.opportunityCard}>
+              {opportunities.map((opp) => (
+                <div key={opp.id} className={styles.opportunityCard}>
                   <div className={styles.oppHeader}>
                     <h3 className={styles.oppName}>{opp.name}</h3>
                     <span className={`${styles.riskBadge} ${styles[opp.riskColor]}`}>
@@ -184,7 +184,7 @@ function DashboardPageContent() {
                   <div className={styles.oppDetails}>
                     <div className={styles.oppDetail}>
                       <span className={styles.oppLabel}>Meta:</span>
-                      <span className={styles.oppValue}>{opp.investment}</span>
+                      <span className={styles.oppValue}>{formatCurrencyShort(opp.investment)}</span>
                     </div>
                     <div className={styles.oppDetail}>
                       <span className={styles.oppLabel}>ROI:</span>

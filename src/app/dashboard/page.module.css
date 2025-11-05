@@ -291,6 +291,10 @@
   background: var(--primary-blue);
 }
 
+.riskBadge.orange {
+  background: #f97316;
+}
+
 .oppDescription {
   font-size: 14px;
   color: #64748b;
